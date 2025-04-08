@@ -1,27 +1,3 @@
-# Виртуальное окружение
-venv/
-.venv/
-
-# Кеш Python
-__pycache__/
-*.py[cod]
-
-# Файлы IDE и VS Code
-.vscode/
-.idea/
-
-# Логи и временные файлы
-*.log
-*.tmp
-
-# Файлы зависимостей (если используются другие менеджеры)
-Pipfile
-Pipfile.lock
-poetry.lock
-
-# Конфигурационные секреты
-.env
-secrets.py
 # Виртуальное окружение (venv, .venv, env)
 venv/
 .venv/

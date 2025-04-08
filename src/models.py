@@ -32,6 +32,7 @@ a=34
 
 class JewelersOrm(Base):
     __tablename__ = "jewelers"
+    __table_args__ = {'extend_existing': True} 
 
     id: Mapped[intpk]
     username: Mapped[str]
@@ -54,6 +55,7 @@ class Workload(enum.Enum):
 
 class OrdersOrm(Base):
     __tablename__ = "orders"
+    __table_args__ = {'extend_existing': True} 
 
     id: Mapped[intpk]
     title: Mapped[str_256]
@@ -73,6 +75,7 @@ class OrdersOrm(Base):
 
 class ClientsOrm(Base):
     __tablename__= "clients"
+    __table_args__ = {'extend_existing': True} 
 
     id: Mapped[intpk]
     username: Mapped[str]

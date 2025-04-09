@@ -59,9 +59,13 @@ class AsyncORM:
     @staticmethod
     async def insert_clients():
         async with async_session_factory() as session:
-            client_jack = ClientsOrm(username="Jack")
-            client_michael = ClientsOrm(username="Michael")
-            session.add_all([client_jack, client_michael])
+            client_tatyana = ClientsOrm(username="Таня Николаева")
+            client_tamara = ClientsOrm(username="Тамара")
+            client_tamara = ClientsOrm(username="Beautiful Girl")
+            client_roman = ClientsOrm(username="RomanMan")
+
+
+            session.add_all([client_tatyana, client_tamara])
             # flush взаимодействует с БД, поэтому пишем await
             await session.flush()
             await session.commit()

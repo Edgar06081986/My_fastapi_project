@@ -11,8 +11,13 @@ dependencies = [
     "os",
     "pydantic-settings>=2.8.1",
     "requests>=2.32.3",
+    "setuptools",
     "sqlalchemy>=2.0.40",
     "sqlalchemy-orm>=1.2.10",
     "sys",
     "uvicorn",
+
+
 ]
+
+

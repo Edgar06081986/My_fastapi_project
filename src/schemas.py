@@ -25,6 +25,7 @@ class OrdersAddDTO(BaseModel):
     compensation: Optional[int]
     workload: Workload
     worker_id: int
+    client_id; int
 
 class OrdersDTO(OrdersAddDTO):
     id: int

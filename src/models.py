@@ -36,7 +36,7 @@ class JewelersOrm(Base):
 
     id: Mapped[intpk]
     username: Mapped[str]
-
+    phone_number: Mapped[str] = mapped_column(String(20)) 
     orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="jeweler",
     )
@@ -79,6 +79,7 @@ class ClientsOrm(Base):
 
     id: Mapped[intpk]
     username: Mapped[str]
+    phone_number: Mapped[str] = mapped_column(String(20)) 
     clients_orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="client",)
 

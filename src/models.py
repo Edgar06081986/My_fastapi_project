@@ -14,8 +14,7 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     String,
     Table,
-    text,
-)
+    text,LargeBinary)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base, str_256
@@ -28,7 +27,6 @@ updated_at = Annotated[datetime.datetime, mapped_column(
     )]
 
 
-a=34
 
 class JewelersOrm(Base):
     __tablename__ = "jewelers"
@@ -36,6 +34,7 @@ class JewelersOrm(Base):
 
     id: Mapped[intpk]
     username: Mapped[str]
+    jeweler_avatar: Mapped[bytes | None] = mapped_column(LargeBinary)
     phone_number: Mapped[str] = mapped_column(String(20)) 
     orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="jeweler",
@@ -59,7 +58,7 @@ class OrdersOrm(Base):
 
     id: Mapped[intpk]
     title: Mapped[str_256]
-    compensation: Mapped[Optional[int]]
+    image_order_path: Mapped[str | None] = mapped_column(String(255))
     workload: Mapped[Workload]
     worker_id: Mapped[int] = mapped_column(ForeignKey("jewelers.id", ondelete="CASCADE"))
     created_at: Mapped[created_at]
@@ -79,6 +78,7 @@ class ClientsOrm(Base):
 
     id: Mapped[intpk]
     username: Mapped[str]
+    client_avatar: Mapped[bytes | None] = mapped_column(LargeBinary)
     phone_number: Mapped[str] = mapped_column(String(20)) 
     clients_orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="client",)

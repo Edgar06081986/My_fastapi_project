@@ -3,7 +3,6 @@ import os
 import sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from queries.orm import AsyncORM
-
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,6 +17,8 @@ async def main():
         await AsyncORM.select_jewelers()
         await AsyncORM.update_jeweler()
         await AsyncORM.insert_orders()
+        await AsyncORM.select_orders()
+        await AsyncORM.update_order()
         await AsyncORM.insert_clients()
         await AsyncORM.select_clients()
         await AsyncORM.update_client()
@@ -31,10 +32,10 @@ def create_fastapi_app():
         allow_origins=["*"],
     )
         
-    @app.get("/jewelers", tags=["Кандидат"])
+    @app.get("/jewelers", tags=["Ювелир"])
     async def get_jewelers():
-        workers = AsyncORM.convert_workers_to_dto()
-        return workers
+        jewelers = AsyncORM.convert_jewelers_to_dto()
+        return jewelers
         
     @app.get("/orders", tags=["Заказы"])
     async def get_resumes():

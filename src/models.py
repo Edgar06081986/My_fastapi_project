@@ -60,7 +60,7 @@ class OrdersOrm(Base):
     title: Mapped[str_256]
     image_order_path: Mapped[str | None] = mapped_column(String(255))
     workload: Mapped[Workload]
-    worker_id: Mapped[int] = mapped_column(ForeignKey("jewelers.id", ondelete="CASCADE"))
+    jeweler_id: Mapped[int] = mapped_column(ForeignKey("jewelers.id", ondelete="CASCADE"))
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id",ondelete="CASCADE"))
@@ -82,45 +82,7 @@ class ClientsOrm(Base):
     phone_number: Mapped[str] = mapped_column(String(20)) 
     clients_orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="client",)
+    orders: Mapped[list["OrdersOrm"]] = relationship(
+        back_populates="client")
 
 
-    # vacancies_replied: Mapped[list["VacanciesOrm"]] = relationship(
-    #     back_populates="resumes_replied",
-    #     secondary="vacancies_replies",
-    # )
-
-    # repr_cols_num = 2
-    # repr_cols = ("created_at", )
-
-    # __table_args__ = (
-    #     Index("title_index", "title"),
-    #     CheckConstraint("compensation > 0", name="checl_compensation_positive"),
-    # )
-
-
-# class VacanciesOrm(Base):
-#     __tablename__ = "vacancies"
-
-#     id: Mapped[intpk]
-#     title: Mapped[str_256]
-#     compensation: Mapped[Optional[int]]
-
-#     resumes_replied: Mapped[list["ResumesOrm"]] = relationship(
-#         back_populates="vacancies_replied",
-#         secondary="vacancies_replies",
-#     )
-
-
-# class VacanciesRepliesOrm(Base):
-#     __tablename__ = "vacancies_replies"
-
-#     resume_id: Mapped[int] = mapped_column(
-#         ForeignKey("resumes.id", ondelete="CASCADE"),
-#         primary_key=True,
-#     )
-#     vacancy_id: Mapped[int] = mapped_column(
-#         ForeignKey("vacancies.id", ondelete="CASCADE"),
-#         primary_key=True,
-#     )
-
-#     cover_letter: Mapped[Optional[str]]

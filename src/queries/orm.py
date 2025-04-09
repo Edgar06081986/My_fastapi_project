@@ -16,12 +16,14 @@ class AsyncORM:
     @staticmethod
     async def insert_jewelers():
         async with async_session_factory() as session:
-            worker_jack = JewelersOrm(username="Jack")
-            worker_michael = JewelersOrm(username="Michael")
-            session.add_all([worker_jack, worker_michael])
+            jeweler_edgar = JewelersOrm(username="Эдгар")
+            jeweler_edmon = JewelersOrm(username="Эдмон")
+            session.add_all([jeweler_edgar, jeweler_edmon])
             # flush взаимодействует с БД, поэтому пишем await
             await session.flush()
             await session.commit()
+
+
 
     @staticmethod
     async def select_jewelers():
@@ -44,7 +46,7 @@ class AsyncORM:
         async with async_session_factory() as session:
             query = (
                 select(JewelersOrm)
-                .options(selectinload(JewelersOrm.resumes))
+                .options(selectinload(JewelersOrm.orders))
                 .limit(2)
             )        
 
@@ -86,23 +88,23 @@ class AsyncORM:
         async with async_session_factory() as session:
             query = (
                 select(ClientsOrm)
-                .options(selectinload(JewelersOrm.resumes))
+                .options(selectinload(ClientsOrm.resumes))
                 .limit(2)
             )        
 
     @staticmethod
     async def insert_orders():
         async with async_session_factory() as session:
-            order_jack_1 = OrdersOrm(
-                title="Изготовить кольцо", compensation=50000, workload=Workload.fulltime, client_id=1)
-            order_jack_2 = OrdersOrm(
-                title="Сделать пару обручалок", compensation=150000, workload=Workload.fulltime, client_id=1)
-            order_michael_1 = OrdersOrm(
-                title="Нужен браслет", compensation=250000, workload=Workload.parttime, client_id=2)
-            order_michael_2 = OrdersOrm(
-                title="Цепь бисмарк", compensation=300000, workload=Workload.fulltime, client_id=2)
-            session.add_all([order_jack_1, order_jack_2, 
-                             order_michael_1, order_michael_2])
+            order_ring = OrdersOrm(
+                title="Изготовить кольцо", compensation=50000, workload=Workload.repair, client_id=1)
+            order_two_ring = OrdersOrm(
+                title="Сделать пару обручалок", compensation=150000, workload=Workload.production, client_id=1)
+            order_braclet = OrdersOrm(
+                title="браслет бисмарк", compensation=250000, workload=Workload.both_add, client_id=2)
+            order_errings = OrdersOrm(
+                title="серьги молодёжки", compensation=300000, workload=Workload.repair, client_id=2)
+            session.add_all([order_ring, order_two_ring, 
+                             order_braclet, order_errings])
             await session.commit()
 
   

@@ -14,14 +14,14 @@ async def main():
     
     await AsyncORM.create_tables()
     await AsyncORM.insert_jewelers()
-    await AsyncORM.select_jewelers()
-    await AsyncORM.update_jeweler()
+    # await AsyncORM.select_jewelers()
+    # await AsyncORM.update_jeweler()
     await AsyncORM.insert_orders()
-    await AsyncORM.select_orders()
-    await AsyncORM.update_order()
+    # await AsyncORM.select_orders()
+    # await AsyncORM.update_order()
     await AsyncORM.insert_clients()
-    await AsyncORM.select_clients()
-    await AsyncORM.update_client()
+    # await AsyncORM.select_clients()
+    # await AsyncORM.update_client()
 
 
 

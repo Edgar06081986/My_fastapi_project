@@ -16,6 +16,7 @@ from sqlalchemy import (
     Table,
     text,LargeBinary)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from geoalchemy2 import Geometry
 
 from database import Base, str_256
 
@@ -28,14 +29,22 @@ updated_at = Annotated[datetime.datetime, mapped_column(
 
 
 
+class Workload(enum.Enum):
+    repair = "ремонт"
+    production = "изготовление"
+    both_add = "ремонт и изготовление"
+
+
 class JewelersOrm(Base):
     __tablename__ = "jewelers"
-    __table_args__ = {'extend_existing': True} 
+     
 
     id: Mapped[intpk]
     username: Mapped[str]
+    workload:Mapped[Workload]
     jeweler_avatar: Mapped[bytes | None] = mapped_column(LargeBinary)
-    phone_number: Mapped[str] = mapped_column(String(20)) 
+    phone_number: Mapped[str] = mapped_column(String(20))
+    adress: Mapped[str] = mapped_column(String(256)) 
     orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="jeweler",
     )
@@ -47,14 +56,10 @@ class JewelersOrm(Base):
     )
     
 
-class Workload(enum.Enum):
-    parttime = "parttime"
-    fulltime = "fulltime"
 
 
 class OrdersOrm(Base):
     __tablename__ = "orders"
-    __table_args__ = {'extend_existing': True} 
 
     id: Mapped[intpk]
     title: Mapped[str_256]
@@ -64,25 +69,24 @@ class OrdersOrm(Base):
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id",ondelete="CASCADE"))
-
+    # Геометрия точки (долгота, широта)
+    location: Mapped[str] = mapped_column(Geometry('POINT'), nullable=True)
     jeweler: Mapped["JewelersOrm"] = relationship(
-        back_populates="orders",
-    )
-    client: Mapped["ClientsOrm"] = relationship(
         back_populates="orders",)
+    client: Mapped["ClientsOrm"] = relationship(
+        back_populates="clients_orders",)
 
 
 class ClientsOrm(Base):
     __tablename__= "clients"
-    __table_args__ = {'extend_existing': True} 
-
+     
     id: Mapped[intpk]
     username: Mapped[str]
     client_avatar: Mapped[bytes | None] = mapped_column(LargeBinary)
     phone_number: Mapped[str] = mapped_column(String(20)) 
     clients_orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="client",)
-    orders: Mapped[list["OrdersOrm"]] = relationship(
-        back_populates="client")
+    
+    
 
 

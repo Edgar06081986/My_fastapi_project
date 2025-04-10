@@ -35,7 +35,8 @@ class ClientsOrm(Base):
      
     id: Mapped[intpk]
     username: Mapped[str]
-    client_avatar: Mapped[bytes | None] = mapped_column(LargeBinary)
+    email: Mapped[Optional[str]]
+    client_avatar: Mapped[Optional[bytes]] = mapped_column(LargeBinary)
     phone_number: Mapped[str] = mapped_column(String(20)) 
     orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="client",)
@@ -52,19 +53,16 @@ class JewelersOrm(Base):
 
     id: Mapped[intpk]
     username: Mapped[str]
+    email: Mapped[Optional[str]]
     workload:Mapped[Workload]
-    jeweler_avatar: Mapped[bytes | None] = mapped_column(LargeBinary)
+    jeweler_avatar: Mapped [Optional[bytes]] = mapped_column(LargeBinary)
     phone_number: Mapped[str] = mapped_column(String(20))
     adress: Mapped[str] = mapped_column(String(256)) 
     orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="jeweler",
     )
 
-    resumes_parttime: Mapped[list["OrdersOrm"]] = relationship(
-        back_populates="jeweler",
-        primaryjoin="and_(JewelersOrm.id == OrdersOrm.jeweler_id, OrdersOrm.workload == 'parttime')",
-        order_by="OrdersOrm.id.desc()",
-    )
+   
     
 # class Geometry_Order(Geometry):
 #     geometry_type: str | None = "GEOMETRY",
@@ -85,7 +83,7 @@ class OrdersOrm(Base):
 
     id: Mapped[intpk]
     title: Mapped[str_256]
-    image_order_path: Mapped[str | None] = mapped_column(String(255))
+    image_order_path: Mapped[Optional[str]] = mapped_column(String(255))
     workload: Mapped[Workload]
     compensation: Mapped[Optional[int]]
     jeweler_id: Mapped[Optional[int]] = mapped_column(ForeignKey("jewelers.id"))
@@ -94,7 +92,7 @@ class OrdersOrm(Base):
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id",ondelete="CASCADE"))
     # Геометрия точки (долгота, широта)
     # location: Mapped[str | None] = mapped_column(Geometry_Order('POINT'), nullable=True)
-    jeweler: Mapped["JewelersOrm"] = relationship(
+    jeweler: Mapped[Optional["JewelersOrm"]] = relationship(
         back_populates="orders",)
     client: Mapped["ClientsOrm"] = relationship(
         back_populates="orders",)

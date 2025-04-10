@@ -2,6 +2,8 @@ from sqlalchemy import Integer, and_, cast, func, insert, inspect, or_, select, 
 from sqlalchemy.orm import aliased, contains_eager, joinedload, selectinload
 from models import JewelersOrm, ClientsOrm, OrdersOrm, Workload
 from database import Base, async_engine, async_session_factory
+from schemas import ( JewelersAddDTO,JewelersDTO,JewelersRelDTO,ClientsAddDTO,ClientsDTO,ClientsRelDTO,OrdersAddDTO,OrdersDTO,OrdersRelDTO)
+from pydantic import BaseModel
 
 
 class AsyncORM:
@@ -15,10 +17,10 @@ class AsyncORM:
     @staticmethod
     async def insert_clients():
         async with async_session_factory() as session:
-            client_tatyana = ClientsOrm(username="Таня Николаева",client_avatar=None,phone_number='+791261662067')
-            client_tamara = ClientsOrm(username="Тамара",client_avatar=None,phone_number='+79180434556')
-            client_buety = ClientsOrm(username="Beautiful Girl",client_avatar=None,phone_number='+79999945545')
-            client_roman = ClientsOrm(username="RomanMan",client_avatar=None,phone_number='+79147678888')
+            client_tatyana = ClientsOrm(username="Таня Николаева",email="nik-tatyana123@yandex.ru",client_avatar=None,phone_number='+791261662067')
+            client_tamara = ClientsOrm(username="Тамара",email="tamara2004@mail.ru",client_avatar=None,phone_number='+79180434556')
+            client_buety = ClientsOrm(username="Beautifual Girl",email="beautygirl@gmail.com",client_avatar=None,phone_number='+79999945545')
+            client_roman = ClientsOrm(username="RomanMan",email="ramzes@rambler.ru",client_avatar=None,phone_number='+79147678888')
             session.add_all([client_tatyana, client_tamara,client_roman,client_buety])
             # flush взаимодействует с БД, поэтому пишем await
             # await session.flush()
@@ -30,7 +32,9 @@ class AsyncORM:
         async with async_session_factory() as session:
             jeweler_edgar = JewelersOrm(username="Эдгар",workload=Workload.repair,phone_number='+79180878473',adress='город Краснодар,улица Индустриальная,дом 2',jeweler_avatar = None)
             jeweler_edmon = JewelersOrm(username="Эдмон",workload=Workload.both_add,phone_number='+79608867773',adress='город Волгоград,улица Советская,дом 17',jeweler_avatar = None)
-            session.add_all([jeweler_edgar, jeweler_edmon])
+            jeweler_boris = JewelersOrm(username="Борис",workload=Workload.production,phone_number='+79288654554',adress='город Москва,улица Ленина,дом 154,ТЦ "Московский"',jeweler_avatar = None)
+            
+            session.add_all([jeweler_edgar, jeweler_edmon,jeweler_boris])
             # flush взаимодействует с БД, поэтому пишем await
             # await session.flush()
             await session.commit()
@@ -54,13 +58,13 @@ class AsyncORM:
 
 
 
-    # @staticmethod
-    # async def select_jewelers():
-    #     async with async_session_factory() as session:
-    #         query = select(JewelersOrm)
-    #         result = await session.execute(query)
-    #         jewelers = result.scalars().all()
-    #         print(f"{jewelers=}")
+    @staticmethod
+    async def select_jewelers():
+        async with async_session_factory() as session:
+            query = select(JewelersOrm)
+            result = await session.execute(query)
+            jewelers = result.scalars().all()
+            print(f"{jewelers=}")
 
     # @staticmethod
     # async def update_jeweler(jeweler_id: int = 2, new_username: str = "Misha"):
@@ -70,25 +74,49 @@ class AsyncORM:
     #         await session.refresh(jeweler_michael)
     #         await session.commit()
 
-    # @staticmethod
-    # async def convert_jewelers_to_dto():
-    #     async with async_session_factory() as session:
-    #         query = (
-    #             select(JewelersOrm)
-    #             .options(selectinload(JewelersOrm.orders))
-    #             .limit(2)
-    #         )        
 
+    @staticmethod
+    async def convert_jewelers_to_dto():
+        async with async_session_factory() as session:
+            query = (
+                select(JewelersOrm)          # without relathionship
+            )        
+            res = session.execute(query)
+            result_orm = res.scalars().all()
+            print(f"{result_orm=}")
+            result_dto = [JewelersRelDTO.model_validate(row, from_attributes=True) for row in result_orm]
+            print(f"{result_dto=}")
+            return result_dto
+        
+
+
+
+
+    @staticmethod
+    async def convert_jewelers_to_dto():
+        async with async_session_factory() as session:
+            query = (
+                select(JewelersOrm)
+                .options(selectinload(JewelersOrm.orders))       #with relaithionship
+                .limit(2)
+            )        
+            res = session.execute(query)
+            result_orm = res.scalars().all()
+            print(f"{result_orm=}")
+            result_dto = [JewelersRelDTO.model_validate(row, from_attributes=True) for row in result_orm]
+            print(f"{result_dto=}")
+            return result_dto
+        
 
     
  
-    # @staticmethod
-    # async def select_clients():
-    #     async with async_session_factory() as session:
-    #         query = select(ClientsOrm)
-    #         result = await session.execute(query)
-    #         clients = result.scalars().all()
-    #         print(f"{clients=}")
+    @staticmethod
+    async def select_clients():
+        async with async_session_factory() as session:
+            query = select(ClientsOrm)
+            result = await session.execute(query)
+            clients = result.scalars().all()
+            print(f"{clients=}")
 
 
     # @staticmethod
@@ -100,14 +128,33 @@ class AsyncORM:
     #         await session.commit()
 
 
-    # @staticmethod
-    # async def convert_clients_to_dto():
-    #     async with async_session_factory() as session:
-    #         query = (
-    #             select(ClientsOrm)
-    #             .options(selectinload(ClientsOrm.resumes))
-    #             .limit(2)
-    #         )        
+    @staticmethod
+    async def convert_clients_to_dto_0():
+        async with async_session_factory() as session:
+            query = (
+                select(ClientsOrm)           # без relithionship
+            )        
+            res = session.execute(query)
+            result_orm = res.scalars().all()
+            print(f"{result_orm=}")
+            result_dto = [ClientsRelDTO.model_validate(row, from_attributes=True) for row in result_orm]
+            print(f"{result_dto=}")
+            return result_dto  
 
+
+    @staticmethod
+    async def convert_clients_to_dto():
+        async with async_session_factory() as session:
+            query = (
+                select(ClientsOrm)
+                .options(selectinload(ClientsOrm.orders))   # с relaitionship
+                .limit(2)
+            )        
+            res = session.execute(query)
+            result_orm = res.scalars().all()
+            print(f"{result_orm=}")
+            result_dto = [JewelersRelDTO.model_validate(row, from_attributes=True) for row in result_orm]
+            print(f"{result_dto=}")
+            return result_dto  
 
   

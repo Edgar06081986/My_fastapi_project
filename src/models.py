@@ -40,6 +40,11 @@ class ClientsOrm(Base):
     phone_number: Mapped[str] = mapped_column(String(20)) 
     orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="client",)
+    jewelers_for_client: Mapped[list["JewelersOrm"]] = relationship(
+        back_populates="clients_for_jeweler",
+        secondary="m2m_jewelers_clients",
+    )
+   
 
 class Workload(enum.Enum):
     repair = "ремонт"
@@ -61,7 +66,10 @@ class JewelersOrm(Base):
     orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="jeweler",
     )
-
+    clients_for_jeweler: Mapped[list["ClientsOrm"]] = relationship(
+        back_populates="jewelers_for_client",
+        secondary="m2m_jewelers_clients",
+    )
    
     
 # class Geometry_Order(Geometry):
@@ -76,6 +84,16 @@ class JewelersOrm(Base):
 #     nullable: bool = True,
 #     _spatial_index_reflected: Any | None = None
 
+class M2mJewelersClientsORM(Base):
+    __tablename__ = "m2m_jewelers_clients"
+
+    jeweler_id: Mapped[int]=mapped_column(ForeignKey("jewelers.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    client_id: Mapped[int]=mapped_column(ForeignKey("clients.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    cover_letter: Mapped[Optional[str]]
 
 
 class OrdersOrm(Base):

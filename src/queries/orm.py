@@ -28,13 +28,11 @@ class AsyncORM:
             
     
     @staticmethod
-    async def insert_jewelers():
+    async def insert_jewelers(a, b, c, d, e, f):
         async with async_session_factory() as session:
-            jeweler_edgar = JewelersOrm(username="Эдгар",workload=Workload.repair,phone_number='+79180878473',adress='город Краснодар,улица Индустриальная,дом 2',jeweler_avatar = None)
-            jeweler_edmon = JewelersOrm(username="Эдмон",workload=Workload.both_add,phone_number='+79608867773',adress='город Волгоград,улица Советская,дом 17',jeweler_avatar = None)
-            jeweler_boris = JewelersOrm(username="Борис",workload=Workload.production,phone_number='+79288654554',adress='город Москва,улица Ленина,дом 154,ТЦ "Московский"',jeweler_avatar = None)
+            data = JewelersOrm(username=a,workload=b,phone_number=c,adress=c,jeweler_avatar = d,email=e,workload=f)
             
-            session.add_all([jeweler_edgar, jeweler_edmon,jeweler_boris])
+            session.add_all([data])
             # flush взаимодействует с БД, поэтому пишем await
             # await session.flush()
             await session.commit()
@@ -66,13 +64,13 @@ class AsyncORM:
             jewelers = result.scalars().all()
             print(f"{jewelers=}")
 
-    # @staticmethod
-    # async def update_jeweler(jeweler_id: int = 2, new_username: str = "Misha"):
-    #     async with async_session_factory() as session:
-    #         jeweler_michael = await session.get(JewelersOrm, jeweler_id)
-    #         jeweler_michael.username = new_username
-    #         await session.refresh(jeweler_michael)
-    #         await session.commit()
+    @staticmethod
+    async def update_jeweler(jeweler_id: int = 3, new_username: str = "Misha"):
+        async with async_session_factory() as session:
+            jeweler_michael = await session.get(JewelersOrm, jeweler_id)
+            jeweler_michael.username = new_username
+            await session.refresh(jeweler_michael)
+            await session.commit()
 
 
     @staticmethod
@@ -84,7 +82,7 @@ class AsyncORM:
             res = session.execute(query)
             result_orm = res.scalars().all()
             print(f"{result_orm=}")
-            result_dto = [JewelersRelDTO.model_validate(row, from_attributes=True) for row in result_orm]
+            result_dto = [JewelersDTO.model_validate(row, from_attributes=True) for row in result_orm]
             print(f"{result_dto=}")
             return result_dto
         
@@ -93,7 +91,7 @@ class AsyncORM:
 
 
     @staticmethod
-    async def convert_jewelers_to_dto():
+    async def convert_jewelers_to_dto_0():
         async with async_session_factory() as session:
             query = (
                 select(JewelersOrm)
@@ -119,13 +117,13 @@ class AsyncORM:
             print(f"{clients=}")
 
 
-    # @staticmethod
-    # async def update_client(client_id: int = 2, new_username: str = "Misha"):
-    #     async with async_session_factory() as session:
-    #         client_michael = await session.get(ClientsOrm, client_id)
-    #         client_michael.username = new_username
-    #         await session.refresh(client_michael)
-    #         await session.commit()
+    @staticmethod
+    async def update_client(client_id: int = 2, new_username: str = "Katya"):
+        async with async_session_factory() as session:
+            client_michael = await session.get(ClientsOrm, client_id)
+            client_michael.username = new_username
+            await session.refresh(client_michael)
+            await session.commit()
 
 
     @staticmethod

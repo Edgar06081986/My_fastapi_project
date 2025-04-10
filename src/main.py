@@ -4,18 +4,17 @@ import sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from queries.orm import AsyncORM
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI,Depends
 from fastapi.middleware.cors import CORSMiddleware
-
-
+from schemas import JewelersAddDTO,JewelersDTO
 
 
 async def main():
     
     await AsyncORM.create_tables()
     await AsyncORM.insert_jewelers()
-    await AsyncORM.insert_clients()
-    await AsyncORM.insert_orders()
+    # await AsyncORM.insert_clients()
+    # await AsyncORM.insert_orders()
     # await AsyncORM.select_jewelers()
     # await AsyncORM.update_jeweler()
     
@@ -25,8 +24,8 @@ async def main():
     # await AsyncORM.select_clients()
     # await AsyncORM.update_client()
     await AsyncORM.convert_jewelers_to_dto()
-    await AsyncORM.convert_clients_to_dto()
-    await AsyncORM.convert_orders_to_dto()
+    # await AsyncORM.convert_clients_to_dto()
+    # await AsyncORM.convert_orders_to_dto()
 
 
 def create_fastapi_app():
@@ -38,8 +37,8 @@ def create_fastapi_app():
 
 
     @app.post("/jewelers", tags=["Ювелир"])
-    async def add_jewelers():
-        jewelers = AsyncORM.insert_jewelers()
+    async def add_jewelers(data: JewelersAddDTO)-> JewelersDTO:
+        jewelers = await  AsyncORM.insert_jewelers(data)
         return jewelers
 
 
@@ -47,20 +46,20 @@ def create_fastapi_app():
 
     @app.get("/jewelers", tags=["Ювелир"])
     async def get_jewelers():
-        jewelers = AsyncORM.convert_jewelers_to_dto()
+        jewelers = await AsyncORM.convert_jewelers_to_dto()
         return jewelers
     
     
 
     @app.get("/clients", tags=["Клиент"])
     async def get_clients():
-        clients = AsyncORM.convert_clients_to_dto()
+        clients = await AsyncORM.convert_clients_to_dto()
         return clients
 
 
     @app.post("/clients", tags=["Клиент"])
     async def add_jewelers():
-        jewelers = AsyncORM.insert_jewelers()
+        jewelers = await AsyncORM.insert_clients()
         return jewelers
 
     @app.get("/orders", tags=["Заказы"])

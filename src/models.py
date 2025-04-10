@@ -1,6 +1,6 @@
 import datetime
 import enum
-from typing import Annotated, Optional
+from typing import Annotated, Optional,Any
 
 from sqlalchemy import (
     TIMESTAMP,
@@ -16,9 +16,10 @@ from sqlalchemy import (
     Table,
     text,LargeBinary)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from geoalchemy2 import Geometry
-
+# from geoalchemy2 import Geometry
 from database import Base, str_256
+
+    
 
 intpk = Annotated[int, mapped_column(primary_key=True)]
 created_at = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]
@@ -28,6 +29,16 @@ updated_at = Annotated[datetime.datetime, mapped_column(
     )]
 
 
+
+class ClientsOrm(Base):
+    __tablename__= "clients"
+     
+    id: Mapped[intpk]
+    username: Mapped[str]
+    client_avatar: Mapped[bytes | None] = mapped_column(LargeBinary)
+    phone_number: Mapped[str] = mapped_column(String(20)) 
+    orders: Mapped[list["OrdersOrm"]] = relationship(
+        back_populates="client",)
 
 class Workload(enum.Enum):
     repair = "ремонт"
@@ -55,6 +66,17 @@ class JewelersOrm(Base):
         order_by="OrdersOrm.id.desc()",
     )
     
+# class Geometry_Order(Geometry):
+#     geometry_type: str | None = "GEOMETRY",
+#     srid: int = -1,
+#     dimension: int = 2,
+#     spatial_index: bool = True,
+#     use_N_D_index: bool = False,
+#     use_typmod: bool | None = None,
+#     from_text: str | None = None,
+#     name: str | None = None,
+#     nullable: bool = True,
+#     _spatial_index_reflected: Any | None = None
 
 
 
@@ -65,28 +87,19 @@ class OrdersOrm(Base):
     title: Mapped[str_256]
     image_order_path: Mapped[str | None] = mapped_column(String(255))
     workload: Mapped[Workload]
-    jeweler_id: Mapped[int] = mapped_column(ForeignKey("jewelers.id", ondelete="CASCADE"))
+    compensation: Mapped[Optional[int]]
+    jeweler_id: Mapped[Optional[int]] = mapped_column(ForeignKey("jewelers.id"))
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id",ondelete="CASCADE"))
     # Геометрия точки (долгота, широта)
-    location: Mapped[str] = mapped_column(Geometry('POINT'), nullable=True)
+    # location: Mapped[str | None] = mapped_column(Geometry_Order('POINT'), nullable=True)
     jeweler: Mapped["JewelersOrm"] = relationship(
         back_populates="orders",)
     client: Mapped["ClientsOrm"] = relationship(
-        back_populates="clients_orders",)
+        back_populates="orders",)
 
 
-class ClientsOrm(Base):
-    __tablename__= "clients"
-     
-    id: Mapped[intpk]
-    username: Mapped[str]
-    client_avatar: Mapped[bytes | None] = mapped_column(LargeBinary)
-    phone_number: Mapped[str] = mapped_column(String(20)) 
-    clients_orders: Mapped[list["OrdersOrm"]] = relationship(
-        back_populates="client",)
-    
-    
+
 
 

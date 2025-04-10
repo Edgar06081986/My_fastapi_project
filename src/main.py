@@ -38,7 +38,7 @@ def create_fastapi_app():
 
     @app.post("/jewelers", tags=["Ювелир"])
     async def add_jewelers(data: JewelersAddDTO)-> JewelersDTO:
-        jewelers = await  AsyncORM.insert_jewelers(data)
+        jewelers = await  AsyncORM.insert_jewelers(a=data.username)
         return jewelers
 
 

@@ -30,9 +30,9 @@ class AsyncORM:
     @staticmethod
     async def insert_jewelers(a, b, c, d, e, f):
         async with async_session_factory() as session:
-            data = JewelersOrm(username=a,workload=b,phone_number=c,adress=c,jeweler_avatar = d,email=e,workload=f)
+            add_jeweler = JewelersOrm(username=a,workload=b,phone_number=c,adress=c,jeweler_avatar = d,email=e,)
             
-            session.add_all([data])
+            session.add_all([add_jeweler])
             # flush взаимодействует с БД, поэтому пишем await
             # await session.flush()
             await session.commit()

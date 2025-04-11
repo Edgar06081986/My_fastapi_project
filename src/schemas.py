@@ -16,6 +16,8 @@ class JewelersAddDTO(BaseModel):
 
 class JewelersDTO(JewelersAddDTO):
     id: int =  Field(ge=0, le=130)
+    created_at: datetime
+    updated_at: datetime
 
 
 class ClientsAddDTO(BaseModel):
@@ -28,21 +30,17 @@ class ClientsAddDTO(BaseModel):
 
 class ClientsDTO(ClientsAddDTO):
     id: int = Field(ge=0, le=130)
-
+    created_at: datetime
+    updated_at: datetime
 
 
 class OrdersAddDTO(BaseModel):
-    title: str
-    compensation: Optional[int]= Field(ge=0, le=130)
-    workload: Workload
-    worker_id: int= fields.Field(..., description="")
-    client_id: int= fields.Field(..., description="")
-    title:str= fields.Field(..., description="")
+    title: str= Field( max_length=360)
+    compensation: Optional[int]
+    workload: Workload 
     image_order_path:Optional[str]
-    workload: Workload
-    compensation: Optional[int] = Field(ge=0, le=130)
-    jeweler_id: Optional[int]=Field(ge=0, le=130)
-    client_id:int = fields.Field(..., description="")
+    jeweler_id: Optional[int]
+    client_id:int = fields.Field(ge=0, le=130)
 
 
 

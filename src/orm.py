@@ -1,5 +1,6 @@
 import os
 import sys
+sys.path.insert(1, os.path.join(sys.path[0], '.'))
 from sqlalchemy import   select
 from sqlalchemy.orm import aliased, contains_eager, joinedload, selectinload
 from models import JewelersOrm, ClientsOrm, OrdersOrm, Workload
@@ -17,13 +18,10 @@ class AsyncORM:
             await conn.run_sync(Base.metadata.create_all)
 
     @staticmethod
-    async def insert_clients():
+    async def insert_clients(username:str,email:EmailStr,client_avatar:Optional[bytes],phone_number:str):
         async with async_session_factory() as session:
-            client_tatyana = ClientsOrm(username="Таня Николаева",email="nik-tatyana123@yandex.ru",client_avatar=None,phone_number='+791261662067')
-            client_tamara = ClientsOrm(username="Тамара",email="tamara2004@mail.ru",client_avatar=None,phone_number='+79180434556')
-            client_buety = ClientsOrm(username="Beautifual Girl",email="beautygirl@gmail.com",client_avatar=None,phone_number='+79999945545')
-            client_roman = ClientsOrm(username="RomanMan",email="ramzes@rambler.ru",client_avatar=None,phone_number='+79147678888')
-            session.add_all([client_tatyana, client_tamara,client_roman,client_buety])
+            add_client= ClientsOrm(username=username,email=email,client_avatar=client_avatar,phone_number=phone_number)
+            session.add_all([add_client])
             # flush взаимодействует с БД, поэтому пишем await
             # await session.flush()
             await session.commit()
@@ -33,7 +31,6 @@ class AsyncORM:
     async def insert_jewelers(username:str,workload:Workload,phone_number:str,adress:str,jeweler_avatar:Optional[bytes],email:EmailStr):
         async with async_session_factory() as session:
             add_jeweler = JewelersOrm(username=username,workload=workload,phone_number=phone_number,adress=adress,jeweler_avatar =jeweler_avatar,email=email)
-            
             session.add_all([add_jeweler])
             # flush взаимодействует с БД, поэтому пишем await
             # await session.flush()
@@ -42,18 +39,10 @@ class AsyncORM:
 
             
     @staticmethod
-    async def insert_orders():
+    async def insert_orders(title:str,compensation:Optional[int],workload:Workload,client_id:int,jeweler_id:int):
         async with async_session_factory() as session:
-            order_ring = OrdersOrm(
-                title="Отремонитровать  кольцо", compensation=None, workload=Workload.repair, client_id=1,jeweler_id=1)
-            order_two_ring = OrdersOrm(
-                title="Сделать пару обручалок", compensation=15000, workload=Workload.production, client_id=2,jeweler_id=1)
-            order_braclet = OrdersOrm(
-                title="Сделать браслет бисмарк и починить кольцо", compensation=25000, workload=Workload.both_add,client_id=3,jeweler_id=2)
-            order_errings = OrdersOrm(
-                title="серьги молодёжки", compensation=30000, workload=Workload.repair,client_id=4,jeweler_id=2)
-            session.add_all([order_ring, order_two_ring, 
-                             order_braclet, order_errings])
+            order_add = OrdersOrm(title=title, compensation=compensation, workload=workload, client_id=client_id,jeweler_id=jeweler_id)
+            session.add_all([order_add])
             await session.commit()
 
 
@@ -83,7 +72,6 @@ class AsyncORM:
             )        
             res = session.execute(query)
             result_orm = res.scalars().all()
-            print(f"{result_orm=}")
             result_dto = [JewelersDTO.model_validate(row, from_attributes=True) for row in result_orm]
             print(f"{result_dto=}")
             return result_dto

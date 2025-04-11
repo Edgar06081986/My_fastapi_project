@@ -36,6 +36,8 @@ class ClientsOrm(Base):
     id: Mapped[intpk]
     username: Mapped[str]
     email: Mapped[Optional[str]]
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
     client_avatar: Mapped[Optional[bytes]] = mapped_column(LargeBinary)
     phone_number: Mapped[str] = mapped_column(String(20)) 
     orders: Mapped[list["OrdersOrm"]] = relationship(
@@ -60,6 +62,8 @@ class JewelersOrm(Base):
     username: Mapped[str]
     email: Mapped[Optional[str]]
     workload:Mapped[Workload]
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
     jeweler_avatar: Mapped [Optional[bytes]] = mapped_column(LargeBinary)
     phone_number: Mapped[str] = mapped_column(String(20))
     adress: Mapped[str] = mapped_column(String(256)) 
@@ -94,6 +98,10 @@ class M2mJewelersClientsORM(Base):
         primary_key=True,
     )
     cover_letter: Mapped[Optional[str]]
+
+
+
+    
 
 
 class OrdersOrm(Base):

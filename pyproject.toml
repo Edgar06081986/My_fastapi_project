@@ -16,6 +16,7 @@ dependencies = [
     "sqlalchemy-orm>=1.2.10",
     "uvicorn>=0.34.0",
     "alembic>=1.15.2",
+    "greenlet>=3.1.1",
 ]
 
 

@@ -1,19 +1,24 @@
+from fastapi import FastAPI,HTTPException
 import asyncio
 import os
 import sys
-sys.path.insert(1, os.path.join(sys.path[0], '.'))
-from orm import AsyncORM
-from schemas import JewelersAddDTO,JewelersDTO,ClientsAddDTO,ClientsDTO,OrdersAddDTO,OrdersDTO
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
+from src.queries.orm import AsyncORM
+from .schemas import JewelersAddDTO,JewelersDTO,ClientsAddDTO,ClientsDTO,OrdersAddDTO,OrdersDTO
 import uvicorn
-from fastapi import FastAPI,HTTPException
-from models import JewelersOrm,ClientsOrm,OrdersOrm
 
-
-async def main():
-    AsyncORM.create_tables()
 
 
 app = FastAPI()
+
+async def main():
+    if "--orm" in sys.argv and "--async" in sys.argv:
+        await AsyncORM.create_tables()
+        await AsyncORM.insert_jewelers()
+
+
+
+    
 
 
 
@@ -22,6 +27,14 @@ async def add_jeweler(new_jeweler: JewelersAddDTO):
     add_jew = await  AsyncORM.insert_jewelers(username=new_jeweler.username,workload=new_jeweler.workload,adress=new_jeweler.adress,email=new_jeweler.email,phone_number=new_jeweler.phone_number,jeweler_avatar=new_jeweler.jeweler_avatar)
     return add_jew
 
+
+
+# if __name__ == "__main__":
+#     asyncio.run(main())  
+#     if "--webserver" in sys.argv:
+#         uvicorn.run(
+#             "src.main:app",
+#             reload=True,)
 
 
 @app.get("/jewelers", tags=["Ювелиры"],summary="Получить всех ювелиров")
@@ -48,10 +61,10 @@ async def add_client(new_client: ClientsAddDTO):
 
 
 
-# @app.get("/clients", tags=["Клиенты"],summary="Получить всех клиентов")
-# async def read_clients():
-#     clients = await AsyncORM.convert_clients_to_dto()
-#     return clients
+@app.get("/clients", tags=["Клиенты"],summary="Получить всех клиентов")
+async def read_clients():
+    clients = await AsyncORM.convert_clients_to_dto()
+    return clients
     
 
 
@@ -67,17 +80,20 @@ async def add_client(new_order: OrdersAddDTO):
 
 
 
-# @app.get("/orders", tags=["Заказы"],summary="Получить все заказы")
-# async def read_orders():
-#     res = await AsyncORM.select_orders()
-#     return res
 
 
-# @app.get("/orders/{order_id}", tags=["Заказы"],summary="Получить конкретный заказ")
-# async def get_order():
-#     pass
+@app.get("/orders", tags=["Заказы"],summary="Получить все заказы")
+async def read_orders():
+    res = await AsyncORM.select_orders()
+    return res
+
+
+# # @app.get("/orders/{order_id}", tags=["Заказы"],summary="Получить конкретный заказ")
+# # async def get_order():
+# #     pass
 
 
 
-if __name__== "__main__":
-    uvicorn.run(app)
+if __name__ == "__main__":    
+    uvicorn.run("src.main:app",reload=True)
+    

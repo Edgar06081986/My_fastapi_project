@@ -17,7 +17,7 @@ from sqlalchemy import (
     text,LargeBinary)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 # from geoalchemy2 import Geometry
-from database import Base, str_256
+from .database import Base, str_256
 
     
 
@@ -35,9 +35,7 @@ class ClientsOrm(Base):
      
     id: Mapped[intpk]
     username: Mapped[str]
-    email: Mapped[Optional[str]]
-    created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    email: Mapped[Optional[str]]=mapped_column(String(20))
     client_avatar: Mapped[Optional[bytes]] = mapped_column(LargeBinary)
     phone_number: Mapped[str] = mapped_column(String(20)) 
     orders: Mapped[list["OrdersOrm"]] = relationship(
@@ -60,10 +58,8 @@ class JewelersOrm(Base):
 
     id: Mapped[intpk]
     username: Mapped[str]
-    email: Mapped[Optional[str]]
+    email: Mapped[Optional[str]]=mapped_column(String(20))
     workload:Mapped[Workload]
-    created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
     jeweler_avatar: Mapped [Optional[bytes]] = mapped_column(LargeBinary)
     phone_number: Mapped[str] = mapped_column(String(20))
     adress: Mapped[str] = mapped_column(String(256)) 

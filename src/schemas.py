@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict,fields,Field,EmailStr
 
-from models import Workload
+from .models import Workload
 
 
 class JewelersAddDTO(BaseModel):
@@ -11,27 +11,25 @@ class JewelersAddDTO(BaseModel):
     workload:Workload
     jeweler_avatar: Optional[bytes]
     phone_number:str = Field(max_length= 15)
-    adress:str
-    email: EmailStr
-
+    adress: str = Field(max_length= 256)
+    email: str = Field(EmailStr)
+    model_config = ConfigDict()
 class JewelersDTO(JewelersAddDTO):
-    id: int =  Field(ge=0, le=130)
-    created_at: datetime
-    updated_at: datetime
+    id: int 
+  
 
 
 class ClientsAddDTO(BaseModel):
     username: str
     client_avatar: Optional[bytes]
     phone_number:str = Field(max_length= 15)
-    email: EmailStr
+    email: str= Field(EmailStr)
 
 
 
 class ClientsDTO(ClientsAddDTO):
-    id: int = Field(ge=0, le=130)
-    created_at: datetime
-    updated_at: datetime
+    id: int
+  
 
 
 class OrdersAddDTO(BaseModel):

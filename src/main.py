@@ -6,21 +6,23 @@ sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from src.queries.orm import AsyncORM
 from .schemas import JewelersAddDTO,JewelersDTO,ClientsAddDTO,ClientsDTO,OrdersAddDTO,OrdersDTO
 import uvicorn
-
+from src.database import async_engine,Base
 
 
 app = FastAPI()
 
-async def main():
-    if "--orm" in sys.argv and "--async" in sys.argv:
-        await AsyncORM.create_tables()
-        await AsyncORM.insert_jewelers()
+# async def main():
+#     if "--orm" in sys.argv and "--async" in sys.argv:
+#         await AsyncORM.create_tables()
+#         await AsyncORM.insert_jewelers()
 
 
-
-    
-
-
+@app.post("/setup")
+async def setup_database():
+    async with async_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
+    return {"ok":True}
 
 @app.post("/jewelers", tags=["Ювелиры"],summary= " Добавить ювелира")
 async def add_jeweler(new_jeweler: JewelersAddDTO):
@@ -82,10 +84,10 @@ async def add_client(new_order: OrdersAddDTO):
 
 
 
-@app.get("/orders", tags=["Заказы"],summary="Получить все заказы")
-async def read_orders():
-    res = await AsyncORM.select_orders()
-    return res
+# @app.get("/orders", tags=["Заказы"],summary="Получить все заказы")
+# async def read_orders():
+#     res = await AsyncORM.select_orders()
+#     return res
 
 
 # # @app.get("/orders/{order_id}", tags=["Заказы"],summary="Получить конкретный заказ")

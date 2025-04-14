@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict,fields,Field,EmailStr
+from sqlalchemy import String
 
 from .models import Workload
 
@@ -12,7 +13,7 @@ class JewelersAddDTO(BaseModel):
     jeweler_avatar: Optional[bytes]
     phone_number:str = Field(max_length= 15)
     adress: str = Field(max_length= 256)
-    email: str = Field(EmailStr)
+    email: str = Field(max_length= 40)
     model_config = ConfigDict()
 class JewelersDTO(JewelersAddDTO):
     id: int 
@@ -23,7 +24,7 @@ class ClientsAddDTO(BaseModel):
     username: str
     client_avatar: Optional[bytes]
     phone_number:str = Field(max_length= 15)
-    email: str= Field(EmailStr)
+    email: str= Field(max_length= 40)
 
 
 

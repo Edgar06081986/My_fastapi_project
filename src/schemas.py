@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict,Field,EmailStr
+from pydantic import BaseModel, ConfigDict,Field,EmailStr,ByteSize
 
 
 from src.models import Workload
@@ -21,10 +21,9 @@ class JewelersDTO(JewelersAddDTO):
 
 
 class ClientsAddDTO(BaseModel):
-    username: str
-    client_avatar: Optional[bytes]
-    phone_number:str = Field(max_length= 15)
-    email: EmailStr
+    username: str=Field(max_length=35)
+    phone_number:str = Field(max_length= 20)
+    email:EmailStr|None
     model_config=ConfigDict(extra="forbid")
 
 

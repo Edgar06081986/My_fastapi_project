@@ -46,19 +46,20 @@ async def get_jewelers(session:SessionDep):
 #     result = await AsyncORM.convert_jewelers_to_dto()
 #     return result
 
+# @app.get("/jewelers/{jeweler_id}", tags=["Ювелир"],summary="Получить конкретного ювелира")
+# async def get_jeweler(jeweler_id: JewelersDTO):  # ← Указываем тип (int, str, UUID и т.д.)
+    
+#     return {"jeweler_id": jeweler_id}
 
-@app.get("/jewelers/{jeweler_id}", tags=["Ювелир"],summary="Получить конкретного ювелира")
-async def get_jeweler(jeweler_id: JewelersDTO):
-    for jeweler in JewelersOrm:
-        if jeweler["id"]== jeweler_id:
-            return jeweler
-        raise HTTPException(status_code=404,detail=" Ювелира с таким идентификатором несуществует")
+
+
 
     
 
 @app.post("/clients", tags=["Клиенты"],summary="Добавить клиента")
 async def add_client(data: ClientsAddDTO,session:SessionDep):
-    new_client = await AsyncORM.insert_clients(username=data.username,email=data.email,phone_number=data.phone_number,client_avatar=data.client_avatar)
+    # new_client = await AsyncORM.insert_clients(username=data.username,email=data.email,phone_number=data.phone_number)
+    new_client=ClientsOrm(username=data.username,email=data.email,phone_number=data.phone_number)
     session.add(new_client)
     await session.commit()
     return {"Клиент создан":True}

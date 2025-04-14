@@ -24,7 +24,7 @@ from src.database import Base, str_256
 intpk = Annotated[int, mapped_column(primary_key=True)]
 created_at = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]
 updated_at = Annotated[datetime.datetime, mapped_column(
-        server_default=text("TIMEZONE('utc', now())"),
+        server_default=text("TIMEZONE('utc', now()+ interval '1 day')"),
         onupdate=datetime.datetime.utcnow,
     )]
 
@@ -35,8 +35,8 @@ class ClientsOrm(Base):
      
     id: Mapped[intpk]
     username: Mapped[str]
-    email: Mapped[Optional[str]]=mapped_column(String(20))
-    client_avatar: Mapped[Optional[bytes]] = mapped_column(LargeBinary)
+    email: Mapped[str]=mapped_column(String(20))
+    # client_avatar: Mapped[Optional[bytes]] = mapped_column(LargeBinary)
     phone_number: Mapped[str] = mapped_column(String(20)) 
     orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="client",)
@@ -58,7 +58,7 @@ class JewelersOrm(Base):
 
     id: Mapped[intpk]
     username: Mapped[str]
-    email: Mapped[Optional[str]]=mapped_column(String(30))
+    email: Mapped[str]=mapped_column(String(30))
     workload:Mapped[Workload]
     # jeweler_avatar: Mapped [Optional[bytes]] = mapped_column(LargeBinary)
     phone_number: Mapped[str] = mapped_column(String(30))

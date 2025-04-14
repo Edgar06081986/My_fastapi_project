@@ -58,10 +58,10 @@ class JewelersOrm(Base):
 
     id: Mapped[intpk]
     username: Mapped[str]
-    email: Mapped[Optional[str]]=mapped_column(String(20))
+    email: Mapped[Optional[str]]=mapped_column(String(30))
     workload:Mapped[Workload]
-    jeweler_avatar: Mapped [Optional[bytes]] = mapped_column(LargeBinary)
-    phone_number: Mapped[str] = mapped_column(String(20))
+    # jeweler_avatar: Mapped [Optional[bytes]] = mapped_column(LargeBinary)
+    phone_number: Mapped[str] = mapped_column(String(30))
     adress: Mapped[str] = mapped_column(String(256)) 
     orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="jeweler",

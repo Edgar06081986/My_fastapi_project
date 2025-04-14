@@ -7,7 +7,7 @@ from alembic import context
 
 from config import settings
 
-from models import JewelersOrm
+from models import *
 from database import Base
 
 config = context.config

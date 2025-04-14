@@ -29,7 +29,7 @@ class AsyncORM:
             
     
     @staticmethod
-    async def insert_jewelers(username:str,workload:Workload,phone_number:str,adress:str,jeweler_avatar:Optional[bytes],email:EmailStr):
+    async def insert_jewelers(username:str,workload:Workload,phone_number:str,adress:str,jeweler_avatar:Optional[bytes],email: str):
         async with async_session_factory() as session:
             add_jeweler = JewelersOrm(username=username,workload=workload,phone_number=phone_number,adress=adress,jeweler_avatar =jeweler_avatar,email=email)
             session.add_all([add_jeweler])

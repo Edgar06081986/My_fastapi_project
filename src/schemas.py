@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict,Field,EmailStr
 
 
-from .models import Workload
+from src.models import Workload
 
 
 class JewelersAddDTO(BaseModel):

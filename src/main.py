@@ -1,22 +1,23 @@
-from fastapi import FastAPI,HTTPException,Depends
+from fastapi import FastAPI,HTTPException
 import asyncio
 import os
 import sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from src.queries.orm import AsyncORM
-from .schemas import JewelersAddDTO,JewelersDTO,ClientsAddDTO,ClientsDTO,OrdersAddDTO,OrdersDTO
+from src.schemas import JewelersAddDTO,JewelersDTO,ClientsAddDTO,ClientsDTO,OrdersAddDTO,OrdersDTO
 import uvicorn
 from src.database import SessionDep,async_engine
 from src.models import *
 from sqlalchemy import select
 
-app = FastAPI()
+
 
 # async def main():
 #     if "--orm" in sys.argv and "--async" in sys.argv:
 #         await AsyncORM.create_tables()
 #         await AsyncORM.insert_jewelers()
 
+app = FastAPI()
 
 @app.post("/setup",summary="Установка базы")
 async def setup_database():
@@ -46,62 +47,63 @@ async def get_jewelers(session:SessionDep):
 #     return result
 
 
-# @app.get("/jewelers/{jeweler_id}", tags=["Ювелир"],summary="Получить конкретного ювелира")
-# async def get_jeweler(jeweler_id: JewelersDTO):
-#     for jeweler in JewelersDTO:
-#         if jeweler["id"]== jeweler_id:
-#             return jeweler
-#         raise HTTPException(status_code=404,detail=" Ювелира с таким идентификатором несуществует")
+@app.get("/jewelers/{jeweler_id}", tags=["Ювелир"],summary="Получить конкретного ювелира")
+async def get_jeweler(jeweler_id: JewelersDTO):
+    for jeweler in JewelersOrm:
+        if jeweler["id"]== jeweler_id:
+            return jeweler
+        raise HTTPException(status_code=404,detail=" Ювелира с таким идентификатором несуществует")
 
     
 
-# @app.post("/clients", tags=["Клиенты"],summary="Добавить клиента")
-# async def add_client(new_client: ClientsAddDTO):
-#     add_client = await AsyncORM.insert_clients(username=new_client.username,email=new_client.email,phone_number=new_client.phone_number,client_avatar=new_client.client_avatar)
+@app.post("/clients", tags=["Клиенты"],summary="Добавить клиента")
+async def add_client(data: ClientsAddDTO,session:SessionDep):
+    new_client = await AsyncORM.insert_clients(username=data.username,email=data.email,phone_number=data.phone_number,client_avatar=data.client_avatar)
+    session.add(new_client)
+    await session.commit()
+    return {"Клиент создан":True}
 
-#     return add_client,{"Клиент создан":True}
 
 
-
-# @app.get("/clients", tags=["Клиенты"],summary="Получить всех клиентов")
-# async def read_clients():
-#     clients = await AsyncORM.convert_clients_to_dto()
-#     return clients
+# # @app.get("/clients", tags=["Клиенты"],summary="Получить всех клиентов")
+# # async def read_clients():
+# #     clients = await AsyncORM.convert_clients_to_dto()
+# #     return clients
     
 
 
-# @app.get("/clients/{client_id}", tags=["Клиенты"],summary="Получить конкретного клиента")
-# async def get_client():
-#     pass
-
-
-# @app.post("/orders", tags=["Заказы"],summary="Добавить заказ")
-# async def add_client(new_order: OrdersAddDTO):
-#     add_order = await AsyncORM.insert_orders(title =new_order.title,compensation=new_order.compensation,workload=new_order.workload,client_id=new_order.client_id,jeweler_id=new_order.jeweler_id)
-#     return add_order                                          
-
-
-
-
-
-# @app.get("/orders", tags=["Заказы"],summary="Получить все заказы")
-# async def read_orders():
-#     res = await AsyncORM.select_orders()
-#     return res
-
-
-# # @app.get("/orders/{order_id}", tags=["Заказы"],summary="Получить конкретный заказ")
-# # async def get_order():
+# # @app.get("/clients/{client_id}", tags=["Клиенты"],summary="Получить конкретного клиента")
+# # async def get_client():
 # #     pass
+
+
+# # @app.post("/orders", tags=["Заказы"],summary="Добавить заказ")
+# # async def add_client(new_order: OrdersAddDTO):
+# #     add_order = await AsyncORM.insert_orders(title =new_order.title,compensation=new_order.compensation,workload=new_order.workload,client_id=new_order.client_id,jeweler_id=new_order.jeweler_id)
+# #     return add_order                                          
+
+
+
+
+
+# # @app.get("/orders", tags=["Заказы"],summary="Получить все заказы")
+# # async def read_orders():
+# #     res = await AsyncORM.select_orders()
+# #     return res
+
+
+# # # @app.get("/orders/{order_id}", tags=["Заказы"],summary="Получить конкретный заказ")
+# # # async def get_order():
+# # #     pass
 
 
 
 if __name__ == "__main__":    
     uvicorn.run("src.main:app",reload=True)
     
-# if __name__ == "__main__":
-#     asyncio.run(main())  
-#     if "--webserver" in sys.argv:
-#         uvicorn.run(
-#             "src.main:app",
-#             reload=True,)
+# # if __name__ == "__main__":
+# #     asyncio.run(main())  
+# #     if "--webserver" in sys.argv:
+# #         uvicorn.run(
+# #             "src.main:app",
+# #             reload=True,)

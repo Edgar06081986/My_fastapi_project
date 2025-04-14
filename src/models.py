@@ -17,7 +17,7 @@ from sqlalchemy import (
     text,LargeBinary)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 # from geoalchemy2 import Geometry
-from .database import Base, str_256
+from src.database import Base, str_256
 
     
 

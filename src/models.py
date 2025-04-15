@@ -1,6 +1,6 @@
 import datetime
 import enum
-from typing import Annotated, Optional,Any
+from typing import Annotated, Optional
 
 from sqlalchemy import (
     TIMESTAMP,
@@ -14,7 +14,7 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     String,
     Table,
-    text,LargeBinary)
+    text,)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 # from geoalchemy2 import Geometry
 from src.database import Base, str_256
@@ -36,7 +36,7 @@ class ClientsOrm(Base):
     id: Mapped[intpk]
     username: Mapped[str]
     email: Mapped[str]=mapped_column(String(20))
-    # client_avatar: Mapped[Optional[bytes]] = mapped_column(LargeBinary)
+    client_avatar_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)  # URL типа "https://storage.yandexcloud.net/..."
     phone_number: Mapped[str] = mapped_column(String(20)) 
     orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="client",)
@@ -60,9 +60,10 @@ class JewelersOrm(Base):
     username: Mapped[str]
     email: Mapped[str]=mapped_column(String(30))
     workload:Mapped[Workload]
-    # jeweler_avatar: Mapped [Optional[bytes]] = mapped_column(LargeBinary)
+    portfolio: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)  # URL типа "https://storage.yandexcloud.net/..."
+    jeweler_avatar_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)  # URL типа "https://storage.yandexcloud.net/..."
     phone_number: Mapped[str] = mapped_column(String(30))
-    adress: Mapped[str] = mapped_column(String(256)) 
+    address: Mapped[str] = mapped_column(String(256)) 
     orders: Mapped[list["OrdersOrm"]] = relationship(
         back_populates="jeweler",
     )
@@ -105,7 +106,7 @@ class OrdersOrm(Base):
 
     id: Mapped[intpk]
     title: Mapped[str_256]
-    image_order_path: Mapped[Optional[str]] = mapped_column(String(255))
+    order_avatar_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)  # URL типа "https://storage.yandexcloud.net/..."
     workload: Mapped[Workload]
     compensation: Mapped[Optional[int]]
     jeweler_id: Mapped[Optional[int]] = mapped_column(ForeignKey("jewelers.id"))

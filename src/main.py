@@ -1,4 +1,5 @@
-from fastapi import FastAPI,HTTPException
+import boto3
+from fastapi import FastAPI,HTTPException,UploadFile,File
 import asyncio
 import os
 import sys
@@ -10,14 +11,11 @@ from src.database import SessionDep,async_engine
 from src.models import *
 from sqlalchemy import select
 
-
-
-# async def main():
-#     if "--orm" in sys.argv and "--async" in sys.argv:
-#         await AsyncORM.create_tables()
-#         await AsyncORM.insert_jewelers()
-
 app = FastAPI()
+
+
+
+
 
 @app.post("/setup",summary="Установка базы")
 async def setup_database():
@@ -27,14 +25,71 @@ async def setup_database():
     return {"ok":True}
 
 
-@app.post("/jewelers", tags=["Ювелиры"],summary= " Добавить ювелира")
-async def add_jeweler(data: JewelersAddDTO,session:SessionDep):
-    # add_jew = await  AsyncORM.insert_jewelers(username=data.username,workload=data.workload,adress=data.adress,email=data.email,phone_number=data.phone_number,jeweler_avatar=data.jeweler_avatar)
-    # return {"ok":True}
-    new_jeweler = JewelersOrm(username=data.username,workload=data.workload,adress=data.adress,email=data.email,phone_number=data.phone_number)   
+
+
+# 1. Создаём сессию с настройками доступа к Yandex Cloud
+session = boto3.session.Session()
+
+# 2. Создаём клиент для S3, указывая Yandex-эндпоинт
+s3 = session.client(
+    service_name='s3',
+    endpoint_url='https://storage.yandexcloud.net',  # Особенность Yandex Cloud
+    aws_access_key_id='ssh-key-1744723044866',  # Key ID из сервисного аккаунта
+    aws_secret_access_key='YOUR_SECRET_KEY',  # Secret Key
+)
+BUCKET_NAME = "app-3djewelers"
+
+
+@app.post("/jewelers/")
+async def add_jeweler(
+    username: str,
+    email: str,
+    workload: Workload,
+    session: SessionDep,  # Добавляем зависимость сессии
+    phone_number: Optional[str] = None,
+    address: Optional[str] = None,
+    avatar: Optional[UploadFile] = File(None)
+):
+    avatar_url = None
+    
+    if avatar:
+        # Проверка типа файла
+        if not avatar.filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+            raise HTTPException(400, "Only JPG/PNG images allowed")
+        
+        # Загрузка в S3
+        file_key = f"avatars/{username}_{avatar.filename}"
+        s3.upload_fileobj(avatar.file, "app-3djewelers", file_key)
+        avatar_url = f"https://storage.yandexcloud.net/your-bucket/{file_key}"
+
+    # Создание DTO
+        data = JewelersAddDTO(
+        username=username,
+        email=email,
+        phone_number=phone_number,
+        address=address,
+        workload=workload,
+        jeweler_avatar_url=avatar_url
+    )
+    
+    # Преобразование в SQLAlchemy модель
+    new_jeweler = JewelersOrm(**data.model_dump())
+    
+    # Сохранение в БД (теперь с асинхронными вызовами)
     session.add(new_jeweler)
     await session.commit()
-    return {"ok":True}
+    await session.refresh(new_jeweler)
+    
+    return {"message": "Jeweler created successfully"}
+
+# @app.post("/jewelers", tags=["Ювелиры"],summary= " Добавить ювелира")
+# async def add_jeweler(data: JewelersAddDTO,session:SessionDep):
+#     # add_jew = await  AsyncORM.insert_jewelers(username=data.username,workload=data.workload,adress=data.adress,email=data.email,phone_number=data.phone_number,jeweler_avatar=data.jeweler_avatar)
+#     # return {"ok":True}
+#     new_jeweler = JewelersOrm(username=data.username,workload=data.workload,adress=data.adress,email=data.email,phone_number=data.phone_number)   
+#     session.add(new_jeweler)
+#     await session.commit()
+#     return {"ok":True}
 
 @app.get("/jewelers", tags=["Ювелиры"],summary="Получить всех ювелиров")
 async def get_jewelers(session:SessionDep):
@@ -53,16 +108,38 @@ async def get_jewelers(session:SessionDep):
 
 
 
+ # 1. Создаём сессию с настройками доступа к Yandex Cloud
+# session = boto3.session.Session()
+
+ # 2. Создаём клиент для S3, указывая Yandex-эндпоинт
+# s3 = session.client(
+#     service_name='s3',
+#     endpoint_url='https://storage.yandexcloud.net',  # Особенность Yandex Cloud
+#     aws_access_key_id='YOUR_ACCESS_KEY',  # Key ID из сервисного аккаунта
+#     aws_secret_access_key='YOUR_SECRET_KEY',  # Secret Key
 
     
 
-@app.post("/clients", tags=["Клиенты"],summary="Добавить клиента")
-async def add_client(data: ClientsAddDTO,session:SessionDep):
-    # new_client = await AsyncORM.insert_clients(username=data.username,email=data.email,phone_number=data.phone_number)
-    new_client=ClientsOrm(username=data.username,email=data.email,phone_number=data.phone_number)
-    session.add(new_client)
-    await session.commit()
-    return {"Клиент создан":True}
+# @app.post("/clients", tags=["Клиенты"],summary="Добавить клиента")
+# async def add_client(data: ClientsAddDTO,session:SessionDep,avatar: Optional[UploadFile] = File(None),
+# ):
+#     avatar_url = None
+    
+#     if avatar:
+#         # Проверка типа файла
+#         if not avatar.filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+#             raise HTTPException(400, "Only JPG/PNG images allowed")
+        
+#         # Загрузка в S3
+#         file_key = f"avatars/{data.username}_{avatar.filename}"
+#         s3.upload_fileobj(data.avatar.file, "app-3djewelers", file_key)
+#         avatar_url = f"https://storage.yandexcloud.net/your-bucket/{file_key}"
+#         data.client_avatar_url=avatar_url
+    
+#     new_client=ClientsOrm(username=data.username,email=data.email,phone_number=data.phone_number)
+#     session.add(new_client)
+#     await session.commit()
+#     return {"Клиент создан":True}
 
 
 @app.get("/clients", tags=["Клиенты"],summary="Получить всех клиентов")
@@ -89,12 +166,12 @@ async def get_clients(session:SessionDep):
 #     return add_order                                          
 
 
-@app.post("/orders", tags=["Заказы"],summary="Добавить заказ")
-async def add_order(data: OrdersAddDTO,session:SessionDep):
-    new_order=ClientsOrm(title =data.title,compensation=data.compensation,workload=data.workload,client_id=data.client_id,jeweler_id=data.jeweler_id)
-    session.add(new_order)
-    await session.commit()
-    return {"Заказ создан":True}
+# @app.post("/orders", tags=["Заказы"],summary="Добавить заказ")
+# async def add_order(data: OrdersAddDTO,session:SessionDep):
+#     new_order=ClientsOrm(title =data.title,compensation=data.compensation,workload=data.workload,client_id=data.client_id,jeweler_id=data.jeweler_id)
+#     session.add(new_order)
+#     await session.commit()
+#     return {"Заказ создан":True}
 
 
 @app.get("/orders", tags=["Заказы"],summary="Получить все заказы")

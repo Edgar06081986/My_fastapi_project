@@ -1,3 +1,4 @@
+from pydantic_settings import SettingsConfigDict
 import boto3
 from fastapi import FastAPI,HTTPException,UploadFile,File
 import asyncio
@@ -14,7 +15,7 @@ from sqlalchemy import select
 app = FastAPI()
 
 
-
+model_config = SettingsConfigDict(env_file=
 
 
 @app.post("/setup",summary="Установка базы")

@@ -65,6 +65,11 @@ async def add_client(data: ClientsAddDTO,session:SessionDep):
     return {"Клиент создан":True}
 
 
+@app.get("/clients", tags=["Клиенты"],summary="Получить всех клиентов")
+async def get_clients(session:SessionDep):
+    query = select(ClientsOrm)
+    result = await session.execute(query)
+    return result.scalars().all()
 
 # # @app.get("/clients", tags=["Клиенты"],summary="Получить всех клиентов")
 # # async def read_clients():
@@ -78,12 +83,25 @@ async def add_client(data: ClientsAddDTO,session:SessionDep):
 # #     pass
 
 
-# # @app.post("/orders", tags=["Заказы"],summary="Добавить заказ")
-# # async def add_client(new_order: OrdersAddDTO):
-# #     add_order = await AsyncORM.insert_orders(title =new_order.title,compensation=new_order.compensation,workload=new_order.workload,client_id=new_order.client_id,jeweler_id=new_order.jeweler_id)
-# #     return add_order                                          
+# @app.post("/orders", tags=["Заказы"],summary="Добавить заказ")
+# async def add_client(new_order: OrdersAddDTO):
+#     add_order = await AsyncORM.insert_orders(title =new_order.title,compensation=new_order.compensation,workload=new_order.workload,client_id=new_order.client_id,jeweler_id=new_order.jeweler_id)
+#     return add_order                                          
 
 
+@app.post("/orders", tags=["Заказы"],summary="Добавить заказ")
+async def add_order(data: OrdersAddDTO,session:SessionDep):
+    new_order=ClientsOrm(title =data.title,compensation=data.compensation,workload=data.workload,client_id=data.client_id,jeweler_id=data.jeweler_id)
+    session.add(new_order)
+    await session.commit()
+    return {"Заказ создан":True}
+
+
+@app.get("/orders", tags=["Заказы"],summary="Получить все заказы")
+async def get_orders(session:SessionDep):
+    query = select(OrdersOrm)
+    result = await session.execute(query)
+    return result.scalars().all()
 
 
 

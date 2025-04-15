@@ -21,6 +21,7 @@ dependencies = [
     "authx>=1.4.2",
     "boto3>=1.37.34",
     "python-multipart>=0.0.20",
+    "dotenv>=0.9.9",
 ]
 
 

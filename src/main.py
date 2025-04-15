@@ -1,8 +1,7 @@
-from pydantic_settings import SettingsConfigDict
+import os
 import boto3
 from fastapi import FastAPI,HTTPException,UploadFile,File
 import asyncio
-import os
 import sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from src.queries.orm import AsyncORM
@@ -11,11 +10,11 @@ import uvicorn
 from src.database import SessionDep,async_engine
 from src.models import *
 from sqlalchemy import select
+from dotenv import load_dotenv
 
 app = FastAPI()
 
 
-model_config = SettingsConfigDict(env_file=
 
 
 @app.post("/setup",summary="Установка базы")
@@ -26,6 +25,7 @@ async def setup_database():
     return {"ok":True}
 
 
+load_dotenv()  # Загружает переменные из .env
 
 
 # 1. Создаём сессию с настройками доступа к Yandex Cloud
@@ -35,9 +35,13 @@ session = boto3.session.Session()
 s3 = session.client(
     service_name='s3',
     endpoint_url='https://storage.yandexcloud.net',  # Особенность Yandex Cloud
-    aws_access_key_id='ssh-key-1744723044866',  # Key ID из сервисного аккаунта
-    aws_secret_access_key='YOUR_SECRET_KEY',  # Secret Key
+    aws_access_key_id=os.getenv('YC_ACCESS_KEY'), # Key ID из сервисного аккаунта
+    aws_secret_access_key=os.getenv('YC_SECRET_KEY'),  # Secret Key
+    
 )
+
+
+
 BUCKET_NAME = "app-3djewelers"
 
 

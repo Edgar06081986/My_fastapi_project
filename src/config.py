@@ -14,6 +14,20 @@ class Settings(BaseSettings):
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
   
-    model_config = SettingsConfigDict(env_file=".env_db")
+    model_config = SettingsConfigDict(env_file=".env")
 
 settings = Settings()
+
+
+
+
+class YandexCloudSettings(BaseSettings):
+    # Автоматически загружает переменные из .env или окружения
+    YC_ACCESS_KEY: str
+    YC_SECRET_KEY: str
+
+    # Указываем, откуда читать конфиг (опционально, Pydantic ищет .env по умолчанию)
+    model_config = SettingsConfigDict(env_file=".env", extra="forbid")
+
+# Создаём инстанс конфига
+config_yandex = YandexCloudSettings()

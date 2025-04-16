@@ -2,10 +2,11 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 
+from fastapi import HTTPException
 from sqlalchemy import   select
 from sqlalchemy.orm import aliased, contains_eager, joinedload, selectinload
 from  src.models import JewelersOrm, ClientsOrm, OrdersOrm, Workload
-from src.database import Base, async_engine, async_session_factory
+from src.database import Base, async_engine, async_session_factory,SessionDep,AsyncSession
 from src.schemas import ( JewelersAddDTO,JewelersDTO,JewelersRelDTO,ClientsAddDTO,ClientsDTO,ClientsRelDTO,OrdersAddDTO,OrdersDTO,OrdersRelDTO)
 from pydantic import BaseModel,EmailStr
 from typing import Optional
@@ -56,15 +57,44 @@ class AsyncORM:
             jewelers = result.scalars().all()
             print(f"{jewelers=}")
 
+    # @staticmethod
+    # async def update_jeweler(jeweler_id: int, new_username: str):
+    #     async with async_session_factory() as session:
+    #         jeweler = await session.get(JewelersOrm, jeweler_id)
+    #           # Если ювелир не найден, возвращаем None
+    #         if not jeweler:
+    #             return None
+    #         jeweler.username = new_username
+    #         await session.refresh(jeweler)
+    #         await session.commit()
+
+    
     @staticmethod
-    async def update_jeweler(jeweler_id: int, new_username: str = "Misha"):
-        async with async_session_factory() as session:
-            jeweler_michael = await session.get(JewelersOrm, jeweler_id)
-            jeweler_michael.username = new_username
-            await session.refresh(jeweler_michael)
+    async def update_jeweler(
+        jeweler_id: int,
+        new_username: str,
+        session: AsyncSession  # Принимаем сессию как параметр
+        ):
+        # Получаем ювелира из базы
+        jeweler = await session.get(JewelersOrm, jeweler_id)
+
+        if not jeweler:
+            return None
+
+        # Обновляем имя
+        jeweler.username = new_username
+
+        try:
             await session.commit()
-
-
+            await session.refresh(jeweler)
+            return jeweler
+        except Exception as e:
+            await session.rollback()
+            raise HTTPException(
+            status_code=400,
+            detail=f"Ошибка при обновлении ювелира: {str(e)}"
+        )
+    
     @staticmethod
     async def convert_jewelers_to_dto():
         async with async_session_factory() as session:

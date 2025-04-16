@@ -1,18 +1,22 @@
 import os
+import gc
 import boto3
-from fastapi import FastAPI,HTTPException,UploadFile,File
+from fastapi import FastAPI,HTTPException,UploadFile,File,Depends
 import asyncio
 import sys
 # sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from src.queries.orm import AsyncORM
 from src.schemas import JewelersAddDTO,JewelersDTO,ClientsAddDTO,ClientsDTO,OrdersAddDTO,OrdersDTO
 import uvicorn
-from src.database import SessionDep,async_engine
+from src.database import SessionDep,async_engine,AsyncSession,get_session
 from src.models import *
 from sqlalchemy import select
 # from dotenv import load_dotenv
 from src.config import yc_settings
 from src.queries.orm import AsyncORM
+from sqlalchemy.ext.asyncio import AsyncSession
+
+
 
 app = FastAPI()
 
@@ -105,24 +109,31 @@ async def get_jewelers(session:SessionDep):
 
 
 @app.get("/jewelers/{jeweler_id}/", tags=["Ювелиры"], summary="Получить ювелира по ID")
-async def get_jeweler(jeweler_id: int, session: SessionDep):
+async def get_jeweler(jeweler_id: int, session: Annotated[AsyncSession, Depends(get_session)]):
     # Ищем ювелира в базе данных по ID
     query = select(JewelersOrm).where(JewelersOrm.id == jeweler_id)
     result = await session.execute(query)
     jeweler = result.scalars().first()
 
-@app.put("/jewelers/{jeweler_id}/", tags=["Ювелиры"], summary="Получить ювелира по ID")
-async def update_jeweler(jeweler_id: int,new_name:str, session:SessionDep):
-        # Ищем ювелира в базе данных по ID
-        # query = select(JewelersOrm).where(JewelersOrm.id == jeweler_id)
-        # result = await session.execute(query)
-        # jeweler = result.scalars().first()
-        result = AsyncORM.update_jeweler(jeweler_id=jeweler_id, session=session, new_name=new_name)
-    # Если ювелир не найден - возвращаем 404 ошибку
-    if not jeweler:
-        raise HTTPException(status_code=404, detail="Ювелир не найден")
 
-    return jeweler
+@app.put("/jewelers/{jeweler_id}/", tags=["Ювелиры"], summary="Отредактировать ювелира по ID")
+async def edit_jeweler(jeweler_id: int, new_name: str, session: SessionDep):
+    # Получаем результат обновления (не забываем await)
+    updated_jeweler = await AsyncORM.update_jeweler(
+        jeweler_id=jeweler_id,
+        new_username=new_name,
+        session=session
+    )
+    # Если ювелир не найден - возвращаем 404 ошибку
+    if not updated_jeweler:
+        raise HTTPException(status_code=404, detail="Ювелир не найден")
+    result= await session.execute(updated_jeweler)
+    # Возвращаем обновленные данные
+    return {
+        "id": updated_jeweler.id,
+        "username": updated_jeweler.username,
+        "message": "Ювелир успешно обновлен"
+    }
 
 
 # async def read_jewelers(jewelers:JewelersAddDTO):
@@ -206,6 +217,10 @@ async def add_client(
 
     return {"message": "Client created successfully", 'new_client': new_client}
 
+
+
+
+
 @app.get("/clients/", tags=["Клиенты"],summary="Получить всех клиентов")
 async def get_clients(session:SessionDep):
     query = select(ClientsOrm)
@@ -255,7 +270,7 @@ async def get_orders(session:SessionDep):
 # # # @app.get("/orders/{order_id}", tags=["Заказы"],summary="Получить конкретный заказ")
 # # # async def get_order():
 # # #     pass
-
+gc.collect()
 
 
 if __name__ == "__main__":    

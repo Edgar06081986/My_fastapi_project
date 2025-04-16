@@ -1,7 +1,8 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field
 
 
-class Settings(BaseSettings):
+class DBSettings(BaseSettings):
     DB_HOST: str
     DB_PORT: int
     DB_USER: str
@@ -10,24 +11,20 @@ class Settings(BaseSettings):
 
     @property
     def DATABASE_URL_asyncpg(self):
-        # postgresql+asyncpg://postgres:postgres@localhost:5432/sa
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
-  
-    model_config = SettingsConfigDict(env_file=".env")
-
-settings = Settings()
-
-
-
+    model_config = SettingsConfigDict(env_file=".env.db", extra="ignore")
 
 class YandexCloudSettings(BaseSettings):
-    # Автоматически загружает переменные из .env или окружения
-    YC_ACCESS_KEY: str
-    YC_SECRET_KEY: str
+    ACCESS_KEY: str = Field(..., alias="YC_ACCESS_KEY")
+    SECRET_KEY: str = Field(..., alias="YC_SECRET_KEY")
 
-    # Указываем, откуда читать конфиг (опционально, Pydantic ищет .env по умолчанию)
-    model_config = SettingsConfigDict(env_file=".env", extra="forbid")
+    model_config = SettingsConfigDict(env_file=".env.yc", extra="ignore")
 
-# Создаём инстанс конфига
-config_yandex = YandexCloudSettings()
+# Инициализация настроек
+db_settings = DBSettings()
+yc_settings = YandexCloudSettings()
+
+print("DB URL:", db_settings.DATABASE_URL_asyncpg)
+print("YC Access Key:", yc_settings.ACCESS_KEY)
+

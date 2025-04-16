@@ -47,3 +47,35 @@ __pycache__/
 .env
 .env.*
 !.env.example  # если нужно исключить какой-то файл (например, шаблон)
+# Файлы окружения
+.env
+.env.*
+!.env.example
+
+# Директории и файлы Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Дистрибутивы и зависимости
+*.egg-info/
+.venv/
+venv/
+env/
+ENV/
+
+# Логи и временные файлы
+*.log
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+
+# Статические файлы (если используются)
+/static/
+
+# Тесты и покрытие
+.coverage
+htmlcov/
+.pytest_cache/

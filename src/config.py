@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 
 
-class DBSettings(BaseSettings):
+class Settings(BaseSettings):
     DB_HOST: str
     DB_PORT: int
     DB_USER: str
@@ -22,9 +22,9 @@ class YandexCloudSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env.yc", extra="ignore")
 
 # Инициализация настроек
-db_settings = DBSettings()
+settings = Settings()
 yc_settings = YandexCloudSettings()
 
-print("DB URL:", db_settings.DATABASE_URL_asyncpg)
-print("YC Access Key:", yc_settings.ACCESS_KEY)
+# print("DB URL:", settings.DATABASE_URL_asyncpg)
+# print("YC Access Key:", yc_settings.ACCESS_KEY)
 

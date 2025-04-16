@@ -3,7 +3,7 @@ import boto3
 from fastapi import FastAPI,HTTPException,UploadFile,File
 import asyncio
 import sys
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
+# sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from src.queries.orm import AsyncORM
 from src.schemas import JewelersAddDTO,JewelersDTO,ClientsAddDTO,ClientsDTO,OrdersAddDTO,OrdersDTO
 import uvicorn

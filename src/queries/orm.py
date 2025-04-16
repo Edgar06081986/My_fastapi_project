@@ -57,7 +57,7 @@ class AsyncORM:
             print(f"{jewelers=}")
 
     @staticmethod
-    async def update_jeweler(jeweler_id: int = 3, new_username: str = "Misha"):
+    async def update_jeweler(jeweler_id: int, new_username: str = "Misha"):
         async with async_session_factory() as session:
             jeweler_michael = await session.get(JewelersOrm, jeweler_id)
             jeweler_michael.username = new_username

@@ -12,13 +12,14 @@ from src.models import *
 from sqlalchemy import select
 # from dotenv import load_dotenv
 from src.config import yc_settings
+from src.queries.orm import AsyncORM
 
 app = FastAPI()
 
 
 
 
-@app.post("/setup",summary="Установка базы")
+@app.post("/setup/",summary="Установка базы")
 async def setup_database():
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -45,7 +46,7 @@ s3 = session.client(
 BUCKET_NAME = "app-3djewelers"
 
 
-@app.post("/jewelers/")
+@app.post("/jewelers/", tags=["Ювелиры"],summary="Добавить ювелира")
 async def add_jeweler(
     username: str,
     email: str,
@@ -96,11 +97,33 @@ async def add_jeweler(
 #     await session.commit()
 #     return {"ok":True}
 
-@app.get("/jewelers", tags=["Ювелиры"],summary="Получить всех ювелиров")
+@app.get("/jewelers/", tags=["Ювелиры"],summary="Получить всех ювелиров")
 async def get_jewelers(session:SessionDep):
     query = select(JewelersOrm)
     result = await session.execute(query)
     return result.scalars().all()
+
+
+@app.get("/jewelers/{jeweler_id}/", tags=["Ювелиры"], summary="Получить ювелира по ID")
+async def get_jeweler(jeweler_id: int, session: SessionDep):
+    # Ищем ювелира в базе данных по ID
+    query = select(JewelersOrm).where(JewelersOrm.id == jeweler_id)
+    result = await session.execute(query)
+    jeweler = result.scalars().first()
+
+@app.put("/jewelers/{jeweler_id}/", tags=["Ювелиры"], summary="Получить ювелира по ID")
+async def update_jeweler(jeweler_id: int,new_name:str, session:SessionDep):
+        # Ищем ювелира в базе данных по ID
+        # query = select(JewelersOrm).where(JewelersOrm.id == jeweler_id)
+        # result = await session.execute(query)
+        # jeweler = result.scalars().first()
+        result = AsyncORM.update_jeweler(jeweler_id=jeweler_id, session=session, new_name=new_name)
+    # Если ювелир не найден - возвращаем 404 ошибку
+    if not jeweler:
+        raise HTTPException(status_code=404, detail="Ювелир не найден")
+
+    return jeweler
+
 
 # async def read_jewelers(jewelers:JewelersAddDTO):
 #     result = await AsyncORM.convert_jewelers_to_dto()
@@ -145,9 +168,45 @@ async def get_jewelers(session:SessionDep):
 #     session.add(new_client)
 #     await session.commit()
 #     return {"Клиент создан":True}
+@app.post("/clients/", tags=["Клиенты"],summary="Добавить клиента")
+async def add_client(
+        username: str,
+        email: str,
+        session: SessionDep,  # Добавляем зависимость сессии
+        phone_number: Optional[str] = None,
+        avatar: Optional[UploadFile] = File(None)
+):
+    avatar_url = None
 
+    if avatar:
+        # Проверка типа файла
+        if not avatar.filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+            raise HTTPException(400, "Only JPG/PNG images allowed")
 
-@app.get("/clients", tags=["Клиенты"],summary="Получить всех клиентов")
+        # Загрузка в S3
+        file_key = f"avatars/{username}_{avatar.filename}"
+        s3.upload_fileobj(avatar.file, "app-3djewelers", file_key)
+        avatar_url = f"https://storage.yandexcloud.net/your-bucket/{file_key}"
+
+        # Создание DTO
+        data = ClientsAddDTO(
+            username=username,
+            email=email,
+            phone_number=phone_number,
+            client_avatar_url=str(avatar_url)
+        )
+
+    # Преобразование в SQLAlchemy модель
+    new_client = ClientsOrm(**data.model_dump())
+
+    # Сохранение в БД (теперь с асинхронными вызовами)
+    session.add(new_client)
+    await session.commit()
+    await session.refresh(new_client)
+
+    return {"message": "Client created successfully", 'new_client': new_client}
+
+@app.get("/clients/", tags=["Клиенты"],summary="Получить всех клиентов")
 async def get_clients(session:SessionDep):
     query = select(ClientsOrm)
     result = await session.execute(query)
@@ -179,7 +238,7 @@ async def get_clients(session:SessionDep):
 #     return {"Заказ создан":True}
 
 
-@app.get("/orders", tags=["Заказы"],summary="Получить все заказы")
+@app.get("/orders/", tags=["Заказы"],summary="Получить все заказы")
 async def get_orders(session:SessionDep):
     query = select(OrdersOrm)
     result = await session.execute(query)

@@ -55,7 +55,6 @@ class Workload(enum.Enum):
 class JewelersOrm(Base):
     __tablename__ = "jewelers"
      
-
     id: Mapped[intpk]
     username: Mapped[str]
     email: Mapped[str]=mapped_column(String(30))
@@ -71,7 +70,7 @@ class JewelersOrm(Base):
         back_populates="jewelers_for_client",
         secondary="m2m_jewelers_clients",
     )
-   
+    
     
 # class Geometry_Order(Geometry):
 #     geometry_type: str | None = "GEOMETRY",

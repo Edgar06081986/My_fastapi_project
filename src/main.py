@@ -11,7 +11,7 @@ from src.database import SessionDep,async_engine
 from src.models import *
 from sqlalchemy import select
 # from dotenv import load_dotenv
-from src.config import config_yandex
+from src.config import yc_settings
 
 app = FastAPI()
 
@@ -36,8 +36,8 @@ session = boto3.session.Session()
 s3 = session.client(
     service_name='s3',
     endpoint_url='https://storage.yandexcloud.net',  # Особенность Yandex Cloud
-    aws_access_key_id=config_yandex.YC_ACCESS_KEY, # Key ID из сервисного аккаунта
-    aws_secret_access_key=config_yandex.YC_SECRET_KEY,  # Secret Key
+    aws_access_key_id=yc_settings.ACCESS_KEY, # Key ID из сервисного аккаунта
+    aws_secret_access_key=yc_settings.SECRET_KEY,  # Secret Key
     )
 
 
@@ -74,7 +74,7 @@ async def add_jeweler(
         phone_number=phone_number,
         address=address,
         workload=workload,
-        jeweler_avatar_url=avatar_url
+        jeweler_avatar_url=str(avatar_url) 
     )
     
     # Преобразование в SQLAlchemy модель
@@ -85,7 +85,7 @@ async def add_jeweler(
     await session.commit()
     await session.refresh(new_jeweler)
     
-    return {"message": "Jeweler created successfully"}
+    return {"message": "Jeweler created successfully",'new_jeweler':new_jeweler}
 
 # @app.post("/jewelers", tags=["Ювелиры"],summary= " Добавить ювелира")
 # async def add_jeweler(data: JewelersAddDTO,session:SessionDep):

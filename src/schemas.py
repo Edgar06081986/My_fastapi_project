@@ -1,24 +1,24 @@
 from datetime import datetime
 from typing import Optional
 import re
-from pydantic import BaseModel, ConfigDict,Field,EmailStr,field_validator,HttpUrl
+from pydantic import BaseModel, ConfigDict,Field,EmailStr,field_validator
 
 
 from src.models import Workload
 
 
 class JewelersAddDTO(BaseModel):
-    jeweler_avatar_url: Optional[HttpUrl] = None  # Автоматическая валидация URL
+    jeweler_avatar_url: Optional[str] = None # Автоматическая валидация URL
     username: str = Field(min_length=1, max_length=60)
     workload: Workload
     phone_number: str = Field(min_length=5, max_length=15)
     address: str = Field(min_length=1, max_length=256)
     email: EmailStr | None
     
-    @field_validator("phone_number")
-    def validate_phone_number(cls, v):
-        if not re.match(r"^\+?[\d\s\-\(\)]{5,15}$", v):
-            raise ValueError("Invalid phone number format")
+    @field_validator("jeweler_avatar_url")
+    def validate_url(cls, v):
+        if v and not v.startswith(("http://", "https://")):
+            raise ValueError("URL должен начинаться с http:// или https://")
         return v
     
     model_config = ConfigDict(
@@ -42,7 +42,7 @@ class JewelersDTO(JewelersAddDTO):
 
 class ClientsAddDTO(BaseModel):
     username: str = Field(min_length=1, max_length=35)
-    client_avatar_url: Optional[HttpUrl] = None  # Автоматическая валидация URL
+    client_avatar_url: Optional[str] = None  # Автоматическая валидация URL
     phone_number: str = Field(min_length=5, max_length=20) 
     email:EmailStr|None
     model_config = ConfigDict(
@@ -76,7 +76,7 @@ class OrdersAddDTO(BaseModel):
     title: str = Field(max_length=360)
     compensation: Optional[int] = Field(None, ge=0)  # ≥ 0 или None
     workload: Workload  # Только значения из Enum
-    order_avatar_url: Optional[HttpUrl] = None  # Автоматическая валидация URL
+    order_avatar_url: Optional[str] = None  # Автоматическая валидация URL
     jeweler_id: Optional[int] = Field(None, ge=1)  # ≥ 1 или None
     client_id: int = Field(ge=0, le=130)  # 0 ≤ client_id ≤ 130
 

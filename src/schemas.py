@@ -13,12 +13,19 @@ class JewelersAddDTO(BaseModel):
     workload: Workload
     phone_number: str = Field(min_length=5, max_length=15)
     address: str = Field(min_length=1, max_length=256)
-    email: EmailStr | None
+    email:str=  EmailStr | None
+    portfolio:Optional[str]=None
     
     @field_validator("jeweler_avatar_url")
     def validate_url(cls, v):
         if v and not v.startswith(("http://", "https://")):
             raise ValueError("URL должен начинаться с http:// или https://")
+        return v
+
+    @field_validator("phone_number")
+    def validate_phone_number(cls, v):
+        if not re.match(r"^\+?[\d\s\-\(\)]{5,20}$", v):
+            raise ValueError("Invalid phone number format")
         return v
     
     model_config = ConfigDict(
@@ -34,7 +41,11 @@ class JewelersAddDTO(BaseModel):
     }
 )
    
-      
+
+class UpdateJewelersDTO(JewelersAddDTO):
+    pass
+
+
 
 class JewelersDTO(JewelersAddDTO):
     id: int 

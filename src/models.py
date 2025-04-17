@@ -47,9 +47,9 @@ class ClientsOrm(Base):
    
 
 class Workload(enum.Enum):
-    repair = "ремонт"
-    production = "изготовление"
-    both_add = "ремонт и изготовление"
+    repair = "repair"
+    production = "production"
+    production_and_repair = "production_and_repair"
 
 
 class JewelersOrm(Base):
@@ -57,7 +57,7 @@ class JewelersOrm(Base):
      
     id: Mapped[intpk]
     username: Mapped[str]
-    email: Mapped[str]=mapped_column(String(30))
+    email: Mapped[str]=mapped_column(String(30),nullable=True)
     workload:Mapped[Workload]
     portfolio: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)  # URL типа "https://storage.yandexcloud.net/..."
     jeweler_avatar_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)  # URL типа "https://storage.yandexcloud.net/..."

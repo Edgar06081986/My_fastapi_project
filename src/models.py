@@ -35,7 +35,7 @@ class ClientsOrm(Base):
      
     id: Mapped[intpk]
     username: Mapped[str]
-    email: Mapped[str]=mapped_column(String(20))
+    email: Mapped[str]=mapped_column(String(30))
     client_avatar_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)  # URL типа "https://storage.yandexcloud.net/..."
     phone_number: Mapped[str] = mapped_column(String(20)) 
     orders: Mapped[list["OrdersOrm"]] = relationship(

@@ -1,12 +1,16 @@
 import sys
 from pathlib import Path
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 
 from sqlalchemy import   select
 from sqlalchemy.orm import aliased, contains_eager, joinedload, selectinload
 from  src.models import JewelersOrm, ClientsOrm, OrdersOrm, Workload
 from src.database import Base, async_engine, async_session_factory
-from src.schemas import ( JewelersAddDTO,JewelersDTO,JewelersRelDTO,ClientsAddDTO,ClientsDTO,ClientsRelDTO,OrdersAddDTO,OrdersDTO,OrdersRelDTO)
+from src.schemas import (JewelersAddDTO, JewelersDTO, JewelersRelDTO, ClientsAddDTO, ClientsDTO, ClientsRelDTO,
+                         OrdersAddDTO, OrdersDTO, OrdersRelDTO, UpdateJewelersDTO)
 from pydantic import BaseModel,EmailStr
 from typing import Optional
 
@@ -29,16 +33,38 @@ class AsyncORM:
             
     
     @staticmethod
-    async def insert_jewelers(username:str,workload:Workload,phone_number:str,adress:str,jeweler_avatar:Optional[bytes],email: str):
-        async with async_session_factory() as session:
-            add_jeweler = JewelersOrm(username=username,workload=workload,phone_number=phone_number,adress=adress,jeweler_avatar =jeweler_avatar,email=email)
-            session.add_all([add_jeweler])
+    async def insert_jewelers(session: AsyncSession,username:str,email: str,workload:Workload,portfolio:Optional[str],jeweler_avatar_url:Optional[str],phone_number:str,address:str):
+        # async with async_session_factory() as session:
+            add_jeweler = JewelersOrm(username=username,workload=workload,email=email,portfolio=portfolio,jeweler_avatar_url=jeweler_avatar_url,phone_number=phone_number,address=address)
+            session.add(add_jeweler)
+
             # flush взаимодействует с БД, поэтому пишем await
-            # await session.flush()
+            await session.flush()
+            await session.commit()
+            return add_jeweler
+
+    # @staticmethod
+    # async def update_jeweler(session:AsyncSession,jeweler_id:int,new_username: str):  #(email: str,workload:Workload,portfolio:Optional[str],jeweler_avatar_url:Optional[str],phone_number:str,address:str)
+    #         jeweler_change_param = await session.get(JewelersOrm, jeweler_id)
+    #         jeweler_change_param.username = new_username
+    #         await session.commit()
+    #         return
+    @staticmethod
+    async  def update_jeweler_0(session:AsyncSession,jeweler:JewelersOrm,update_jeweler:UpdateJewelersDTO):
+        for name,value in update_jeweler.model_dump().items():
+            setattr(jeweler,name,value)
+        await session.commit()
+        return jeweler
+
+
+    @staticmethod
+    async def update_client(client_id: int = 2, new_username: str = "Katya"):
+        async with async_session_factory() as session:
+            client_michael = await session.get(ClientsOrm, client_id)
+            client_michael.username = new_username
+            await session.refresh(client_michael)
             await session.commit()
 
-
-            
     @staticmethod
     async def insert_orders(title:str,compensation:Optional[int],workload:Workload,client_id:int,jeweler_id:int):
         async with async_session_factory() as session:
@@ -56,13 +82,6 @@ class AsyncORM:
             jewelers = result.scalars().all()
             print(f"{jewelers=}")
 
-    @staticmethod
-    async def update_jeweler(jeweler_id: int, new_username: str = "Misha"):
-        async with async_session_factory() as session:
-            jeweler_michael = await session.get(JewelersOrm, jeweler_id)
-            jeweler_michael.username = new_username
-            await session.refresh(jeweler_michael)
-            await session.commit()
 
 
     @staticmethod

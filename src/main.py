@@ -119,9 +119,10 @@ async def update_jeweler(jeweler_id: int,new_name:str, session:SessionDep):
         # jeweler = result.scalars().first()
         result = AsyncORM.update_jeweler(jeweler_id=jeweler_id, session=session, new_name=new_name)
     # Если ювелир не найден - возвращаем 404 ошибку
-if not jeweler:
-    raise HTTPException(status_code=404, detail="Ювелир не найден")
+    if not jeweler:
+        raise HTTPException(status_code=404, detail="Ювелир не найден")
 
+    return jeweler
 
 
 # async def read_jewelers(jewelers:JewelersAddDTO):

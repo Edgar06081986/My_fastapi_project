@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASS: str
     DB_NAME: str
+    db_echo: bool = True
 
     @property
     def DATABASE_URL_asyncpg(self):

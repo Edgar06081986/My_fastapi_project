@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
 
-# from src.database import SessionDep, async_engine
+from src.database import SessionDep, async_engine
 from src.api_v1.jewelers import crud_jew
 from src.api_v1.jewelers.crud_jew import *
 from src.models.base import *
@@ -54,36 +54,32 @@ async def get_jeweler(jeweler_id: int, session: SessionDep):
     return jeweler
 
 
-# @router.put("/{jeweler_id}/", summary="Изменить ювелира по ID")
-# async def update_jeweler(jeweler_id: int, new_name: str, session: SessionDep):
-# Ищем ювелира в базе данных по ID
-# query = select(JewelersOrm).where(JewelersOrm.id == jeweler_id)
-# result = await session.execute(query)
-# jeweler = result.scalars().first()
-# result = crud_jew.update_jeweler(
-# jeweler_id=jeweler_id, session=session, new_name=new_name
-# )
-
-
-# # Если ювелир не найден - возвращаем 404 ошибку
-#     if not jeweler:
-#     raise HTTPException(status_code=404, detail="Ювелир не найден")
-#
-#     return jeweler
+@router.put("/{jeweler_id}/", summary="Изменить ювелира по ID")
+async def change_jeweler(jeweler_id: int, new_name: str, session: SessionDep):
+    # Ищем ювелира в базе данных по ID
+    query = select(JewelersOrm).where(JewelersOrm.id == jeweler_id)
+    result = await session.execute(query)
+    jeweler = result.scalars().first()
+    result = crud_jew.update_jeweler(jeweler_id=jeweler_id, new_name=new_name)
+    # Если ювелир не найден - возвращаем 404 ошибку
+    if not jeweler:
+        raise HTTPException(status_code=404, detail="Ювелир не найден")
+    return jeweler
 
 
 @router.get("/", summary="get all jewelers")
-async def read_jewelers(jewelers: JewelersAddDTO):
+async def read_jewelers():
     result = await crud_jew.convert_jewelers_to_dto()
     return result
 
 
 @router.get("/{jeweler_id}", summary="get one jeweler")
 async def get_jeweler(
-    jeweler_id: int,
+    jeweler_id: int, session: SessionDep
 ):  # ← Указываем тип (int, str, UUID и т.д.)
 
-    return {"jeweler_id": jeweler_id}
+    # return {"jeweler_id": jeweler_id}
+    pass
 
 
 # 1. Создаём сессию с настройками доступа к Yandex Cloud

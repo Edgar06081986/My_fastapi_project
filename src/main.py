@@ -1,5 +1,4 @@
 from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
 from src.api_v1.clients.end_client import router as router_client
 from src.models.base import Base
@@ -8,8 +7,8 @@ from src.api_v1.jewelers.end_jeweler import router as router_jeweler
 import uvicorn
 from src.models.db_helper import db_helper
 
-# from database import SessionDep, async_engine
-# from config import yc_settings
+from src.database import SessionDep, async_engine
+from src.config import yc_settings
 
 
 @asynccontextmanager
@@ -27,11 +26,11 @@ app.include_router(router_jeweler)
 app.include_router(router_order)
 app.include_router(router_client)
 
-if __name__ == "__main__":    
-    uvicorn.run("src.main:app",reload=True)
-    
+if __name__ == "__main__":
+    uvicorn.run("src.main:app", reload=True)
+
 # # if __name__ == "__main__":
-# #     asyncio.run(main())  
+# #     asyncio.run(main())
 # #     if "--webserver" in sys.argv:
 # #         uvicorn.run(
 # #             "src.main:app",

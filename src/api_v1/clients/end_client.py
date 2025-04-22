@@ -1,12 +1,13 @@
-from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File,Depends
+from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File,Depends,status
 import boto3
 from src.database import SessionDep
 from src.api_v1.clients.cli_schemas import ClientsAddDTO
-from typing import Optional
 from src.models.models import ClientsOrm
 from src.models.db_helper import db_helper
 from sqlalchemy import select
 from src.api_v1.clients import crud_cli
+from .deps_client import client_by_id
+from .cli_schemas import *
 
 
 app = FastAPI()
@@ -25,7 +26,7 @@ s3 = session.client(
     aws_secret_access_key="YOUR_SECRET_KEY",
 )  # Secret Key
 
-
+BUCKET_NAME = "app-3djewelers"
 # @router.post("/add", summary="Добавить клиента")
 # async def add_client(data: ClientsAddDTO,session:SessionDep,avatar: Optional[UploadFile] = File(None),
 # ):
@@ -101,11 +102,12 @@ async def add_client(
 
 
 @router.get("/", summary="Получить всех клиентов")
-async def read_clients():
-    clients = await crud_cli.get_products()
+async def read_clients(session:SessionDep=Depends(db_helper.scoped_session_dependency),):
+    clients = await crud_cli.get_clients(session=session,)
     return clients
 
 
-@router.delete("/{client_id}/",summary="Удалить клиента")
-async def delete_client(session:SessionDep=Depends(db_helper.scoped_session_dependency))
-    await crud_cli.delete_client(session=session,)
+@router.delete("/{client_id}/", status_code=status.HTTP_204_NO_CONTENT,summary="Удалить клиента")
+async def delete_client(client:ClientsOrm=Depends(client_by_id),
+    session:SessionDep=Depends(db_helper.scoped_session_dependency))->None:
+    await crud_cli.delete_client(session=session,client=client)

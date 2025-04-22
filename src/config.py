@@ -24,7 +24,7 @@ class Settings(BaseSettings):
 
 
 class YandexCloudSettings(BaseSettings):
-    api_v1_prefix: str = "/api/v1"
+    api_v1_prefix_2: str = "/api/v1"
     ACCESS_KEY: str = Field(alias="YC_ACCESS_KEY")
     SECRET_KEY: str = Field(alias="YC_SECRET_KEY")
 

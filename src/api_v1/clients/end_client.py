@@ -27,6 +27,28 @@ s3 = session.client(
 )  # Secret Key
 
 
+# @router.post("/add", summary="Добавить клиента")
+# async def add_client(data: ClientsAddDTO,session:SessionDep,avatar: Optional[UploadFile] = File(None),
+# ):
+#     avatar_url = None
+
+#     if avatar:
+#         # Проверка типа файла
+#         if not avatar.filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+#             raise HTTPException(400, "Only JPG/PNG images allowed")
+
+#         # Загрузка в S3
+#         file_key = f"avatars/{data.username}_{avatar.filename}"
+#         s3.upload_fileobj(data.avatar.file, "app-3djewelers", file_key)
+#         avatar_url = f"https://storage.yandexcloud.net/your-bucket/{file_key}"
+#         data.client_avatar_url=avatar_url
+
+#     new_client=ClientsOrm(username=data.username,email=data.email,phone_number=data.phone_number)
+#     session.add(new_client)
+#     await session.commit()
+#     return {"Клиент создан":True}
+
+
 @router.post("/", summary="add client")
 async def add_client(
     username: str,
@@ -66,38 +88,22 @@ async def add_client(
     return {"message": "Client created successfully", "new_client": new_client}
 
 
-@router.get("/", summary="Получить всех клиентов")
-async def get_clients(session: SessionDep):
-    query = select(ClientsOrm)
-    result = await session.execute(query)
-    return result.scalars().all()
+# @router.get("/", summary="Получить всех клиентов")
+# async def get_clients(session: SessionDep):
+#     query = select(ClientsOrm)
+#     result = await session.execute(query)
+#     return result.scalars().all()
+
+
+# @router.get("/", summary="Получить всех клиентов")
+# async def read_clients():
+#     clients = await crud_cli.convert_clients_to_dto()
+#     return clients
 
 
 @router.get("/", summary="Получить всех клиентов")
 async def read_clients():
-    clients = await crud_cli.convert_clients_to_dto()
+    clients = await crud_cli.get_products()
     return clients
 
 
-
-
-# @router.post("/add", ,summary="Добавить клиента")
-# async def add_client(data: ClientsAddDTO,session:SessionDep,avatar: Optional[UploadFile] = File(None),
-# ):
-#     avatar_url = None
-#
-#     if avatar:
-#         # Проверка типа файла
-#         if not avatar.filename.lower().endswith(('.jpg', '.jpeg', '.png')):
-#             raise HTTPException(400, "Only JPG/PNG images allowed")
-#
-#         # Загрузка в S3
-#         file_key = f"avatars/{data.username}_{avatar.filename}"
-#         s3.upload_fileobj(data.avatar.file, "app-3djewelers", file_key)
-#         avatar_url = f"https://storage.yandexcloud.net/your-bucket/{file_key}"
-#         data.client_avatar_url=avatar_url
-#
-#     new_client=ClientsOrm(username=data.username,email=data.email,phone_number=data.phone_number)
-#     session.add(new_client)
-#     await session.commit()
-#     return {"Клиент создан":True}

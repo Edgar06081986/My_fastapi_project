@@ -8,7 +8,7 @@ from src.models.models import OrdersOrm
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
 
-@router.post("/orders", summary="Добавить заказ")
+@router.post("/", summary="Добавить заказ")
 async def add_client(new_order: OrdersAddDTO, session: SessionDep):
     ad_order = await crud_ord.insert_orders(
         title=new_order.title,
@@ -22,7 +22,7 @@ async def add_client(new_order: OrdersAddDTO, session: SessionDep):
     return ad_order
 
 
-@router.post("/orders", summary="Добавить заказ")
+@router.post("/", summary="Добавить заказ")
 async def add_order(data: OrdersAddDTO, session: SessionDep):
     new_order = OrdersOrm(
         title=data.title,
@@ -36,7 +36,7 @@ async def add_order(data: OrdersAddDTO, session: SessionDep):
     return {"Заказ создан": True}
 
 
-@router.get("/orders/", summary="Получить все заказы")
+@router.get("/", summary="Получить все заказы")
 async def get_orders(session: SessionDep):
     query = select(OrdersOrm)
     result = await session.execute(query)

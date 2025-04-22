@@ -21,19 +21,18 @@ async def add_client(new_order: OrdersAddDTO, session: SessionDep):
     await session.commit()
     return ad_order
 
-
-@router.post("/", summary="Добавить заказ")
-async def add_order(data: OrdersAddDTO, session: SessionDep):
-    new_order = OrdersOrm(
-        title=data.title,
-        compensation=data.compensation,
-        workload=data.workload,
-        client_id=data.client_id,
-        jeweler_id=data.jeweler_id,
-    )
-    session.add(new_order)
-    await session.commit()
-    return {"Заказ создан": True}
+# @router.post("/", summary="Добавить заказ")
+# async def add_order(data: OrdersAddDTO, session: SessionDep):
+#     new_order = OrdersOrm(
+#         title=data.title,
+#         compensation=data.compensation,
+#         workload=data.workload,
+#         client_id=data.client_id,
+#         jeweler_id=data.jeweler_id,
+#     )
+#     session.add(new_order)
+#     await session.commit()
+#     return {"Заказ создан": True}
 
 
 @router.get("/", summary="Получить все заказы")

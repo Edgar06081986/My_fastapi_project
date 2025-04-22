@@ -6,6 +6,6 @@ from .orders.end_order import router as order_router
 
 
 router = APIRouter()
-router.include_router(router=jeweler_router,)
+router.include_router(router=jeweler_router)
 router.include_router(router=client_router)
 router.include_router(router=order_router)

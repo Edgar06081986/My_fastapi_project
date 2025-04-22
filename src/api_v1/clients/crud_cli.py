@@ -83,3 +83,11 @@ async def get_products(session: SessionDep) -> list[ClientsOrm]:
 #         ]
 #         print(f"{result_dto=}")
 #         return result_dto
+
+
+async def delete_client(
+    session: SessionDep,
+    client: ClientsOrm,
+) -> None:
+    await session.delete(client)
+    await session.commit()

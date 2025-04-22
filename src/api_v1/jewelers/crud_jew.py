@@ -1,5 +1,5 @@
 from typing import Optional
-
+from src.database import SessionDep
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from src.database import async_session_factory
@@ -75,3 +75,11 @@ async def convert_jewelers_to_dto_0():
         ]
         print(f"{result_dto=}")
         return result_dto
+
+
+async def delete_jeweler(
+    session: SessionDep,
+    jeweler: JewelersOrm,
+) -> None:
+    await session.delete(jeweler)
+    await session.commit()

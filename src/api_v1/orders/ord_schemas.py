@@ -35,7 +35,7 @@ class ClientsAddDTO(BaseModel):
     username: str = Field(min_length=1, max_length=35)
     client_avatar_url: Optional[str] = None  # Автоматическая валидация URL
     phone_number: str = Field(min_length=5, max_length=20)
-    email: EmailStr | None
+    email: Optional[EmailStr] = Field(default=None, json_schema_extra={"default": None})
     model_config = ConfigDict(
         extra="forbid",
         json_schema_extra={

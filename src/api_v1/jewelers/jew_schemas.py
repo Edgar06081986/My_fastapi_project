@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, ConfigDict, field_validator, EmailStr
 from typing import Optional
 import re
 from src.models.models import Workload
+from datetime import datetime
 
 
 class JewelersAddDTO(BaseModel):
@@ -10,7 +11,7 @@ class JewelersAddDTO(BaseModel):
     workload: Workload
     phone_number: str = Field(min_length=5, max_length=15)
     address: str = Field(min_length=1, max_length=256)
-    email: str = EmailStr | None
+    email: Optional[EmailStr] = Field(default=None, json_schema_extra={"default": None})
     portfolio: Optional[str] = None
 
     @field_validator("jeweler_avatar_url")
@@ -47,6 +48,27 @@ class UpdateJewelersDTO(JewelersAddDTO):
 
 class JewelersDTO(JewelersAddDTO):
     id: int
+
+
+class OrdersAddDTO(BaseModel):
+    title: str = Field(max_length=360)
+    compensation: Optional[int] = Field(None, ge=0)  # ≥ 0 или None
+    workload: Workload  # Только значения из Enum
+    order_avatar_url: Optional[str] = None  # Автоматическая валидация URL
+    jeweler_id: Optional[int] = Field(None, ge=1)  # ≥ 1 или None
+    client_id: int = Field(ge=0, le=130)  # 0 ≤ client_id ≤ 130
+
+    # @field_validator("order_foto_url")
+    # def validate_image_path(cls, v):
+    #     if v and not v.endswith((".jpg", ".png")):
+    #         raise ValueError("Only .jpg or .png allowed")
+    #     return v
+
+
+class OrdersDTO(OrdersAddDTO):
+    id: int = Field(ge=0, le=130)
+    created_at: datetime
+    updated_at: datetime
 
 
 class JewelersRelDTO(JewelersDTO):

@@ -1,28 +1,30 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
-from src.database import SessionDep, async_engine
-from src.jewelers import crud_jew
-from crud_jew import *
+
+# from src.database import SessionDep, async_engine
+from src.api_v1.jewelers import crud_jew
+from src.api_v1.jewelers.crud_jew import *
 from src.models.base import *
 from src.config import yc_settings
 import boto3
+from src.api_v1.jewelers.jew_schemas import JewelersAddDTO
 
 router = APIRouter(
     prefix="/jewelers",
     tags=["Jewelers"],
 )
 
-
-@router.post("/setup/", summary="Установка базы")
-async def setup_database():
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
-    return {"ok": True}
+#
+# @router.post("/setup/", summary="Установка базы")
+# async def setup_database():
+#     async with async_engine.begin() as conn:
+#         await conn.run_sync(Base.metadata.drop_all)
+#         await conn.run_sync(Base.metadata.create_all)
+#     return {"ok": True}
 
 
 @router.post("/", summary=" Добавить ювелира")
 async def add_jeweler(data: JewelersAddDTO, session: SessionDep):
-    # add_jew = await  AsyncORM.insert_jewelers(username=data.username,workload=data.workload,adress=data.adress,email=data.email,phone_number=data.phone_number,jeweler_avatar=data.jeweler_avatar)
+    # add_jew = await  AsyncORM.insert_jewelers(username=data.username,workload=data.workload,address=data.address,email=data.email,phone_number=data.phone_number,jeweler_avatar=data.jeweler_avatar)
     # return {"ok":True}
     new_jeweler = JewelersOrm(
         username=data.username,
@@ -76,9 +78,9 @@ async def read_jewelers(jewelers: JewelersAddDTO):
     return result
 
 
-@router.get("/{jeweler_id}", summary="Получить конкретного ювелира")
+@router.get("/{jeweler_id}", summary="get one jeweler")
 async def get_jeweler(
-    jeweler_id: JewelersDTO,
+    jeweler_id: int,
 ):  # ← Указываем тип (int, str, UUID и т.д.)
 
     return {"jeweler_id": jeweler_id}

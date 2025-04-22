@@ -1,8 +1,7 @@
-from fastapi import APIRouter, FastAPI, HTTPException, UploadFile, File
+from fastapi import APIRouter
 from src.database import SessionDep
-from src.orders import crud_ord
-import boto3
-from src.orders.ord_schemas import OrdersDTO, OrdersRelDTO, OrdersAddDTO
+from src.api_v1.orders import crud_ord
+from src.api_v1.orders.ord_schemas import OrdersAddDTO
 from sqlalchemy import select
 from src.models.models import OrdersOrm
 

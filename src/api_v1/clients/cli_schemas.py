@@ -1,7 +1,8 @@
 from pydantic import BaseModel, Field, ConfigDict, field_validator, EmailStr
 from typing import Optional
 import re
-from src.orders.ord_schemas import OrdersDTO
+from src.models.models import Workload
+from datetime import datetime
 
 
 class ClientsAddDTO(BaseModel):
@@ -41,3 +42,18 @@ class ClientsDTO(ClientsAddDTO):
 
 class ClientsRelDTO(ClientsDTO):
     orders: list["OrdersDTO"]
+
+
+class OrdersAddDTO(BaseModel):
+    title: str = Field(max_length=360)
+    compensation: Optional[int] = Field(None, ge=0)  # ≥ 0 или None
+    workload: Workload  # Только значения из Enum
+    order_avatar_url: Optional[str] = None  # Автоматическая валидация URL
+    jeweler_id: Optional[int] = Field(None, ge=1)  # ≥ 1 или None
+    client_id: int = Field(ge=0, le=130)  # 0 ≤ client_id ≤ 130
+
+
+class OrdersDTO(OrdersAddDTO):
+    id: int = Field(ge=0, le=130)
+    created_at: datetime
+    updated_at: datetime

@@ -79,9 +79,6 @@ async def read_clients():
     return clients
 
 
-@router.get("/{client_id}", tags=["Клиенты"], summary="Получить конкретного клиента")
-async def get_client():
-    pass
 
 
 # @router.post("/add", ,summary="Добавить клиента")

@@ -49,6 +49,3 @@ async def read_orders():
     return res
 
 
-@router.get("/orders/{order_id}", tags=["Заказы"], summary="Получить конкретный заказ")
-async def get_order():
-    pass

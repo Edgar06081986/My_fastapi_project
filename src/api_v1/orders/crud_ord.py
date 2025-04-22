@@ -1,5 +1,5 @@
 from typing import Optional
-from src.database import async_session_factory
+from src.database import async_session_factory,SessionDep
 from src.models.models import OrdersOrm, Workload
 
 
@@ -24,3 +24,16 @@ async def insert_orders(
 
 async def select_orders():
     pass
+
+
+
+
+
+
+async def delete_order(
+    session: SessionDep,
+    order: OrdersOrm,
+) -> None:
+    await session.delete(order)
+    await session.commit()
+

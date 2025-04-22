@@ -1,11 +1,10 @@
-from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File
+from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File,Depends
 import boto3
-
 from src.database import SessionDep
 from src.api_v1.clients.cli_schemas import ClientsAddDTO
 from typing import Optional
 from src.models.models import ClientsOrm
-
+from src.models.db_helper import db_helper
 from sqlalchemy import select
 from src.api_v1.clients import crud_cli
 
@@ -107,3 +106,6 @@ async def read_clients():
     return clients
 
 
+@router.delete("/{client_id}/",summary="Удалить клиента")
+async def delete_client(session:SessionDep=Depends(db_helper.scoped_session_dependency))
+    await crud_cli.delete_client(session=session,)

@@ -1,7 +1,6 @@
-<<<<<<< HEAD
 from fastapi import Depends
 from typing import Optional,Annotated
-from src.config import settings
+from .config import settings
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import String
@@ -33,7 +32,6 @@ class Base(DeclarativeBase):
         str_256: String(256)
     }
 
-=======
 # from fastapi import Depends
 # from typing import Optional, Annotated
 # from src.config import settings
@@ -64,4 +62,4 @@ class Base(DeclarativeBase):
 #
 #
 # str_256 = Annotated[str, 256]
->>>>>>> 6544014 (редактирую проект)
+

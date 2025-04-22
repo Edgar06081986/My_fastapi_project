@@ -1,10 +1,10 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from src.clients.end_client import router as router_client
+from src.api_v1.clients.end_client import router as router_client
 from src.models.base import Base
-from src.orders.end_order import router as router_order
-from src.jewelers.end_jeweler import router as router_jeweler
+from src.api_v1.orders.end_order import router as router_order
+from src.api_v1.jewelers.end_jeweler import router as router_jeweler
 import uvicorn
 from src.models.db_helper import db_helper
 

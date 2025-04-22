@@ -3,11 +3,11 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 
 from sqlalchemy import   select
-from sqlalchemy.orm import aliased, contains_eager, joinedload, selectinload
+from sqlalchemy.orm import selectinload
 from  src.models import JewelersOrm, ClientsOrm, OrdersOrm, Workload
 from src.database import Base, async_engine, async_session_factory
-from src.schemas import ( JewelersAddDTO,JewelersDTO,JewelersRelDTO,ClientsAddDTO,ClientsDTO,ClientsRelDTO,OrdersAddDTO,OrdersDTO,OrdersRelDTO)
-from pydantic import BaseModel,EmailStr
+from src.schemas import (JewelersDTO, JewelersRelDTO, ClientsRelDTO)
+from pydantic import EmailStr
 from typing import Optional
 
 class AsyncORM:

@@ -1,5 +1,8 @@
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
+
+BASE_DIR = Path(__file__).parent.parent
 
 
 class Settings(BaseSettings):
@@ -14,14 +17,14 @@ class Settings(BaseSettings):
     def DATABASE_URL_asyncpg(self):
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
-    model_config = SettingsConfigDict(env_file=".env.db", extra="ignore")
+    model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/.env.db", extra="ignore")
 
 
 class YandexCloudSettings(BaseSettings):
-    ACCESS_KEY: str = Field(..., alias="YC_ACCESS_KEY")
-    SECRET_KEY: str = Field(..., alias="YC_SECRET_KEY")
+    ACCESS_KEY: str = Field(alias="YC_ACCESS_KEY")
+    SECRET_KEY: str = Field(alias="YC_SECRET_KEY")
 
-    model_config = SettingsConfigDict(env_file=".env.yc", extra="ignore")
+    model_config = SettingsConfigDict(env_file=f"{BASE_DIR} / .env.yc", extra="ignore")
 
 
 # Инициализация настроек

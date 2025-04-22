@@ -1,11 +1,13 @@
 from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File
 import boto3
-from src.database import SessionDep
-from src.clients.cli_schemas import ClientsAddDTO, ClientsDTO, ClientsRelDTO
+
+# from src.database import SessionDep
+from src.api_v1.clients.cli_schemas import ClientsAddDTO
 from typing import Optional
+from src.models.models import ClientsOrm
 
 from sqlalchemy import select
-from src.clients import crud_cli
+from src.api_v1.clients import crud_cli
 
 
 app = FastAPI()

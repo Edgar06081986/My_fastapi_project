@@ -1,69 +1,67 @@
 from typing import Optional
-
+from pydantic import EmailStr
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from src.database import async_session_factory
-from src.models.models import JewelersOrm, Workload
-import src.models as models
-from src.jewelers.jew_schemas import JewelersRelDTO, JewelersDTO, JewelersAddDTO
+from src.models.models import ClientsOrm
+from src.api_v1.clients.cli_schemas import ClientsRelDTO
+from src.api_v1.jewelers.jew_schemas import JewelersRelDTO
 
 
-async def insert_jewelers(
+async def insert_clients(
     username: str,
-    workload: Workload,
+    email: EmailStr,
+    client_avatar: Optional[bytes],
     phone_number: str,
-    adress: str,
-    jeweler_avatar: Optional[bytes],
-    email: str,
 ):
     async with async_session_factory() as session:
-        add_jeweler = JewelersOrm(
+        add_client = ClientsOrm(
             username=username,
-            workload=workload,
-            phone_number=phone_number,
-            adress=adress,
-            jeweler_avatar=jeweler_avatar,
             email=email,
+            client_avatar=client_avatar,
+            phone_number=phone_number,
         )
-        session.add_all([add_jeweler])
+        session.add_all([add_client])
         # flush взаимодействует с БД, поэтому пишем await
         # await session.flush()
         await session.commit()
 
 
-async def select_jewelers():
+async def select_clients():
     async with async_session_factory() as session:
-        query = select(JewelersOrm)
+        query = select(ClientsOrm)
         result = await session.execute(query)
-        jewelers = result.scalars().all()
-        print(f"{jewelers=}")
+        clients = result.scalars().all()
+        print(f"{clients=}")
 
 
-async def update_jeweler(jeweler_id: int, new_username: str = "Misha"):
+async def update_client(client_id: int = 2, new_username: str = "Katya"):
     async with async_session_factory() as session:
-        jeweler_michael = await session.get(models.JewelersOrm, jeweler_id)
-        jeweler_michael.username = new_username
-        await session.refresh(jeweler_michael)
+        client_michael = await session.get(ClientsOrm, client_id)
+        client_michael.username = new_username
+        await session.refresh(client_michael)
         await session.commit()
 
 
-async def convert_jewelers_to_dto():
+async def convert_clients_to_dto_0():
     async with async_session_factory() as session:
-        query = select(JewelersOrm)  # without relathionship
+        query = select(ClientsOrm)  # без relithionship
         res = session.execute(query)
         result_orm = res.scalars().all()
+        print(f"{result_orm=}")
         result_dto = [
-            JewelersDTO.model_validate(row, from_attributes=True) for row in result_orm
+            ClientsRelDTO.model_validate(row, from_attributes=True)
+            for row in result_orm
         ]
         print(f"{result_dto=}")
         return result_dto
 
 
-async def convert_jewelers_to_dto_0():
+async def convert_clients_to_dto():
     async with async_session_factory() as session:
         query = (
-            select(JewelersOrm)
-            .options(selectinload(JewelersOrm.orders))  # with relaithionship
+            select(ClientsOrm)
+            .options(selectinload(ClientsOrm.orders))  # с relaitionship
             .limit(2)
         )
         res = session.execute(query)

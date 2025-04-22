@@ -24,7 +24,7 @@ class YandexCloudSettings(BaseSettings):
     ACCESS_KEY: str = Field(alias="YC_ACCESS_KEY")
     SECRET_KEY: str = Field(alias="YC_SECRET_KEY")
 
-    model_config = SettingsConfigDict(env_file=f"{BASE_DIR} / .env.yc", extra="ignore")
+    model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/.env.yc", extra="ignore")
 
 
 # Инициализация настроек

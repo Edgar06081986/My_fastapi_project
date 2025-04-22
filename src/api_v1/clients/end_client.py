@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File
 import boto3
 
-# from src.database import SessionDep
+from src.database import SessionDep
 from src.api_v1.clients.cli_schemas import ClientsAddDTO
 from typing import Optional
 from src.models.models import ClientsOrm

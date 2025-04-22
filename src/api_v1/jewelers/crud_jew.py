@@ -31,6 +31,10 @@ async def insert_jewelers(
         await session.commit()
 
 
+async def get_jeweler(session: SessionDep, jeweler_id: int) -> JewelersOrm | None:
+    return await session.get(JewelersOrm, jeweler_id)
+
+
 async def select_jewelers():
     async with async_session_factory() as session:
         query = select(JewelersOrm)

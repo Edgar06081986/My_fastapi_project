@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File
-
+from fastapi import APIRouter, HTTPException, UploadFile, File,status,Depends
+from src.api_v1.jewelers.crud_jew import *
 from src.database import SessionDep, async_engine
 from src.api_v1.jewelers import crud_jew
 from src.api_v1.jewelers.crud_jew import *
@@ -7,6 +7,8 @@ from src.models.base import *
 from src.config import yc_settings
 import boto3
 from src.api_v1.jewelers.jew_schemas import JewelersAddDTO
+from .deps_jeweler import jeweler_by_id
+from src.models.db_helper import db_helper
 
 router = APIRouter(
     prefix="/jewelers",
@@ -138,3 +140,7 @@ async def get_jeweler(
     # return {"jeweler_id": jeweler_id}
     pass
 
+@router.delete("/{jeweler_id}/", status_code=status.HTTP_204_NO_CONTENT,summary="Удалить ювелира")
+async def delete_jeweler(jeweler:JewelersOrm=Depends(jeweler_by_id),
+    session:SessionDep=Depends(db_helper.scoped_session_dependency))->None:
+    await crud_jew.delete_jeweler(session=session,jeweler=jeweler)

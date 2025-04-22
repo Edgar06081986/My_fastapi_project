@@ -10,12 +10,15 @@ from src.api_v1.clients.cli_schemas import ClientsRelDTO
 from src.api_v1.jewelers.jew_schemas import JewelersRelDTO
 
 
-async def get_products(session: SessionDep) -> list[ClientsOrm]:
+async def get_clients(session: SessionDep) -> list[ClientsOrm]:
     stmt = select(ClientsOrm).order_by(ClientsOrm.id)
     result: Result = await session.execute(stmt)
-    products = result.scalars().all()
-    return list(products)
+    clients = result.scalars().all()
+    return list(clients)
 
+
+async def get_client(session: SessionDep, client_id: int) -> ClientsOrm| None:
+    return await session.get(ClientsOrm, client_id)
 
 
 # async def insert_clients(

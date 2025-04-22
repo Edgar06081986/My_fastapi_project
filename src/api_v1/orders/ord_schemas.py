@@ -1,9 +1,8 @@
-from pydantic import BaseModel, Field, ConfigDict, field_validator, EmailStr
+from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import Optional
 from datetime import datetime
 from src.models.models import Workload
-from src.clients.cli_schemas import ClientsDTO
-from src.jewelers.jew_schemas import JewelersDTO
+from src.api_v1.jewelers.jew_schemas import JewelersDTO
 
 
 class OrdersAddDTO(BaseModel):
@@ -30,3 +29,26 @@ class OrdersDTO(OrdersAddDTO):
 class OrdersRelDTO(OrdersDTO):
     jeweler: Optional["JewelersDTO"]
     client: "ClientsDTO"
+
+
+class ClientsAddDTO(BaseModel):
+    username: str = Field(min_length=1, max_length=35)
+    client_avatar_url: Optional[str] = None  # Автоматическая валидация URL
+    phone_number: str = Field(min_length=5, max_length=20)
+    email: Optional[EmailStr] = Field(default=None, json_schema_extra={"default": None})
+    model_config = ConfigDict(
+        extra="forbid",
+        json_schema_extra={
+            "examples": [
+                {
+                    "username": "john_doe",
+                    "phone_number": "+1234567890",
+                    "email": "john@example.com",
+                }
+            ]
+        },
+    )
+
+
+class ClientsDTO(ClientsAddDTO):
+    id: int

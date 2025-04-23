@@ -1,23 +1,24 @@
 from typing import Optional
 from pydantic import EmailStr
 from sqlalchemy import select
-from src.database import SessionDep
+# from src.database import SessionDep
 from sqlalchemy.engine import Result
 from sqlalchemy.orm import selectinload
 from src.database import async_session_factory
 from src.models.models import ClientsOrm
 from src.api_v1.clients.cli_schemas import ClientsRelDTO
 from src.api_v1.jewelers.jew_schemas import JewelersRelDTO
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
-async def get_clients(session: SessionDep) -> list[ClientsOrm]:
+async def get_clients(session: AsyncSession) -> list[ClientsOrm]:
     stmt = select(ClientsOrm).order_by(ClientsOrm.id)
     result: Result = await session.execute(stmt)
     clients = result.scalars().all()
     return list(clients)
 
 
-async def get_client(session: SessionDep, client_id: int) -> ClientsOrm| None:
+async def get_client(session: AsyncSession, client_id: int) -> ClientsOrm| None:
     return await session.get(ClientsOrm, client_id)
 
 
@@ -89,7 +90,7 @@ async def get_client(session: SessionDep, client_id: int) -> ClientsOrm| None:
 
 
 async def delete_client(
-    session: SessionDep,
+    session: AsyncSession,
     client: ClientsOrm,
 ) -> None:
     await session.delete(client)

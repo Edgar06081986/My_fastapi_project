@@ -14,12 +14,12 @@ async_engine = create_async_engine(
 async_session_factory = async_sessionmaker(async_engine, expire_on_commit=False)
 
 
-async def get_session():
-    async with async_session_factory() as session:
-        yield session
+# async def get_session():
+#     async with async_session_factory() as session:
+#         yield session
 
 
-SessionDep = Annotated[AsyncSession, Depends(get_session)]
+# SessionDep = Annotated[AsyncSession, Depends(get_session)]
 
 
 str_256 = Annotated[str, 256]

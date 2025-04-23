@@ -1,13 +1,56 @@
 from typing import Optional
-
-# from src.database import SessionDep
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
-from src.database import async_session_factory
-from src.models.models import JewelersOrm, Workload
-import src.models as models
-from src.api_v1.jewelers.jew_schemas import JewelersRelDTO, JewelersDTO
 from sqlalchemy.ext.asyncio import AsyncSession
+from src.models.models import JewelersOrm
+from src.api_v1.jewelers.jew_schemas import UpdateJewelersDTO
+
+
+async def get_jeweler(session: AsyncSession, jeweler_id: int) -> Optional[JewelersOrm]:
+    """Fetch a jeweler by ID."""
+    try:
+        return await session.get(JewelersOrm, jeweler_id)
+    except Exception as e:
+        print(f"Error fetching jeweler: {e}")
+        return None
+
+
+async def update_jeweler(
+    session: AsyncSession,
+    jeweler: JewelersOrm,
+    jeweler_update: UpdateJewelersDTO,
+    partial: bool = False,
+) -> JewelersOrm:
+    """Update a jeweler's details."""
+    try:
+        update_data = jeweler_update.model_dump(exclude_unset=partial)
+        for name, value in update_data.items():
+            setattr(jeweler, name, value)
+        await session.commit()
+        return jeweler
+    except Exception as e:
+        await session.rollback()
+        print(f"Error updating jeweler: {e}")
+        raise
+
+
+async def select_jewelers(session: AsyncSession) -> list[JewelersOrm]:
+    """Fetch all jewelers."""
+    query = select(JewelersOrm)
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
+async def delete_jeweler(session: AsyncSession, jeweler: JewelersOrm) -> None:
+    """Delete a jeweler."""
+    try:
+        await session.delete(jeweler)
+        await session.commit()
+    except Exception as e:
+        await session.rollback()
+        print(f"Error deleting jeweler: {e}")
+        raise
+
+
 
 #
 # async def insert_jewelers(
@@ -33,8 +76,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 #         await session.commit()
 
 
-async def get_jeweler(session: AsyncSession, jeweler_id: int) -> JewelersOrm | None:
-    return await session.get(JewelersOrm, jeweler_id)
+
+
+
 
 
 # async def select_jewelers():
@@ -83,10 +127,3 @@ async def get_jeweler(session: AsyncSession, jeweler_id: int) -> JewelersOrm | N
 #         print(f"{result_dto=}")
 #         return result_dto
 
-
-async def delete_jeweler(
-    session: AsyncSession,
-    jeweler: JewelersOrm,
-) -> None:
-    await session.delete(jeweler)
-    await session.commit()

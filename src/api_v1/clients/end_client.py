@@ -1,5 +1,6 @@
-from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File,Depends,status
+from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Depends, status
 import boto3
+
 from src.database import SessionDep
 from src.api_v1.clients.cli_schemas import ClientsAddDTO
 from src.models.models import ClientsOrm
@@ -8,6 +9,7 @@ from sqlalchemy import select
 from src.api_v1.clients import crud_cli
 from .deps_client import client_by_id
 from .cli_schemas import *
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 app = FastAPI()
@@ -102,12 +104,21 @@ async def add_client(
 
 
 @router.get("/", summary="Получить всех клиентов")
-async def read_clients(session:SessionDep=Depends(db_helper.scoped_session_dependency),):
-    clients = await crud_cli.get_clients(session=session,)
+async def read_clients(
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+):
+    clients = await crud_cli.get_clients(
+        session=session,
+    )
     return clients
 
 
-@router.delete("/{client_id}/", status_code=status.HTTP_204_NO_CONTENT,summary="Удалить клиента")
-async def delete_client(client:ClientsOrm=Depends(client_by_id),
-    session:SessionDep=Depends(db_helper.scoped_session_dependency))->None:
-    await crud_cli.delete_client(session=session,client=client)
+#
+# @router.delete(
+#     "/{client_id}/", status_code=status.HTTP_204_NO_CONTENT, summary="Удалить клиента"
+# )
+# async def delete_client(
+#     client: ClientsOrm = Depends(client_by_id),
+#     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+# ) -> None:
+#     await crud_cli.delete_client(session=session, client=client)

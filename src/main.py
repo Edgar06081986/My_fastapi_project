@@ -12,19 +12,22 @@ from src.config import yc_settings, settings
 from src.api_v1 import router as router_v1
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    async with db_helper.engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-    yield
-
-
-app = FastAPI(lifespan=lifespan)
-app.include_router(router=router_v1, prefix=settings.api_v1_prefix)
-app.include_router(router=router_v1, prefix=yc_settings.api_v1_prefix_2)
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     async with db_helper.engine.begin() as conn:
+#         await conn.run_sync(Base.metadata.create_all)
+#
+#     yield
 
 
+app = FastAPI()
+# Подключаем роутер с двумя разными префиксами (если они не совпадают)
+if settings.api_v1_prefix != yc_settings.api_v1_prefix_2:
+    app.include_router(router=router_v1, prefix=settings.api_v1_prefix)
+    app.include_router(router=router_v1, prefix=yc_settings.api_v1_prefix_2)
+else:
+    # Если префиксы одинаковые, подключаем только один раз
+    app.include_router(router=router_v1, prefix=settings.api_v1_prefix)
 
 
 if __name__ == "__main__":

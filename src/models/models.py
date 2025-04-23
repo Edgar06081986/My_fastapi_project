@@ -30,7 +30,7 @@ updated_at = Annotated[
     datetime.datetime,
     mapped_column(
         server_default=text("TIMEZONE('utc', now()+ interval '1 day')"),
-        onupdate=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.now(datetime.timezone.utc),
     ),
 ]
 

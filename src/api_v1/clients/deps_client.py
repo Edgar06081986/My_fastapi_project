@@ -1,7 +1,8 @@
 from typing import Annotated
 
 from fastapi import Path, Depends, HTTPException, status
-from src.database import SessionDep
+# from src.database import SessionDep
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.db_helper import db_helper
 from  src.models.models import *
@@ -11,7 +12,7 @@ from . import crud_cli
 
 async def client_by_id(
     client_id: Annotated[int, Path],
-    session: SessionDep = Depends(db_helper.scoped_session_dependency),
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ) -> ClientsOrm:
     client = await crud_cli.get_client(session=session, client_id=client_id)
     if client is not None:

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Depends, status
 import boto3
-
-from src.database import SessionDep
+from src.config import yc_settings
+# from src.database import SessionDep
 from src.api_v1.clients.cli_schemas import ClientsAddDTO
 from src.models.models import ClientsOrm
 from src.models.db_helper import db_helper
@@ -14,48 +14,30 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 app = FastAPI()
 
-router = APIRouter(prefix="/clients", tags=["Clients"])
+router = APIRouter(
+    prefix="/clients",
+    tags=["Clients"])
 
 
-# 1. Создаём сессию с настройками доступа к Yandex Cloud
+
 session = boto3.session.Session()
 
 # 2. Создаём клиент для S3, указывая Yandex-эндпоинт
 s3 = session.client(
     service_name="s3",
     endpoint_url="https://storage.yandexcloud.net",  # Особенность Yandex Cloud
-    aws_access_key_id="YOUR_ACCESS_KEY",  # Key ID из сервисного аккаунта
-    aws_secret_access_key="YOUR_SECRET_KEY",
-)  # Secret Key
+    aws_access_key_id=yc_settings.ACCESS_KEY,  # Key ID из сервисного аккаунта
+    aws_secret_access_key=yc_settings.SECRET_KEY,  # Secret Key
+)
 
 BUCKET_NAME = "app-3djewelers"
-# @router.post("/add", summary="Добавить клиента")
-# async def add_client(data: ClientsAddDTO,session:SessionDep,avatar: Optional[UploadFile] = File(None),
-# ):
-#     avatar_url = None
-
-#     if avatar:
-#         # Проверка типа файла
-#         if not avatar.filename.lower().endswith(('.jpg', '.jpeg', '.png')):
-#             raise HTTPException(400, "Only JPG/PNG images allowed")
-
-#         # Загрузка в S3
-#         file_key = f"avatars/{data.username}_{avatar.filename}"
-#         s3.upload_fileobj(data.avatar.file, "app-3djewelers", file_key)
-#         avatar_url = f"https://storage.yandexcloud.net/your-bucket/{file_key}"
-#         data.client_avatar_url=avatar_url
-
-#     new_client=ClientsOrm(username=data.username,email=data.email,phone_number=data.phone_number)
-#     session.add(new_client)
-#     await session.commit()
-#     return {"Клиент создан":True}
 
 
 @router.post("/", summary="add client")
 async def add_client(
     username: str,
     email: str,
-    session: SessionDep,  # Добавляем зависимость сессии
+    session: AsyncSession=Depends(db_helper.scoped_session_dependency),  # Добавляем зависимость сессии
     phone_number: Optional[str] = None,
     avatar: Optional[UploadFile] = File(None),
 ):
@@ -88,6 +70,30 @@ async def add_client(
     await session.refresh(new_client)
 
     return {"message": "Client created successfully", "new_client": new_client}
+
+# @router.post("/add", summary="Добавить клиента")
+# async def add_client(data: ClientsAddDTO,session:SessionDep,avatar: Optional[UploadFile] = File(None),
+# ):
+#     avatar_url = None
+
+#     if avatar:
+#         # Проверка типа файла
+#         if not avatar.filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+#             raise HTTPException(400, "Only JPG/PNG images allowed")
+
+#         # Загрузка в S3
+#         file_key = f"avatars/{data.username}_{avatar.filename}"
+#         s3.upload_fileobj(data.avatar.file, "app-3djewelers", file_key)
+#         avatar_url = f"https://storage.yandexcloud.net/your-bucket/{file_key}"
+#         data.client_avatar_url=avatar_url
+
+#     new_client=ClientsOrm(username=data.username,email=data.email,phone_number=data.phone_number)
+#     session.add(new_client)
+#     await session.commit()
+#     return {"Клиент создан":True}
+# 1. Создаём сессию с настройками доступа к Yandex Cloud
+
+
 
 
 # @router.get("/", summary="Получить всех клиентов")

@@ -65,7 +65,7 @@ class JewelersOrm(Base):
 
     id: Mapped[intpk]
     username: Mapped[str]
-    email: Mapped[str] = mapped_column(String(30), nullable=True)
+    email: Mapped[str] = mapped_column(String(30))
     workload: Mapped[Workload]
     portfolio: Mapped[Optional[str]] = mapped_column(
         String(500), nullable=True

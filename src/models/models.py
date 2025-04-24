@@ -19,7 +19,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 # from geoalchemy2 import Geometry
-from src.database import Base, str_256
+from src.models.base import Base, str_256
 
 
 intpk = Annotated[int, mapped_column(primary_key=True)]
@@ -55,9 +55,9 @@ class ClientsOrm(Base):
 
 
 class Workload(enum.Enum):
-    repair = "repair"
-    production = "production"
-    production_and_repair = "production_and_repair"
+    repair = "ремонт"
+    production = "изготовление на заказ"
+    production_and_repair = "ремонт и изготовление на заказ"
 
 
 class JewelersOrm(Base):

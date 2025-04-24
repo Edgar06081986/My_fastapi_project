@@ -1,6 +1,6 @@
 from fastapi import Depends
 from typing import Annotated
-from .config import settings
+from src.config import settings
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import String

@@ -32,7 +32,7 @@ class JewelersAddDTO(BaseModel):
             "examples": [
                 {
                     "username": "johndoe",
-                    "workload": ("repair" or "production" or "production_and_repair"),
+                    "workload": "repair",
                     "phone_number": "+71234567890",
                     "address": "город Краснодар,улица Красная,дом 5 ",
                     "email": "john@example.com",

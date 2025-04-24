@@ -28,6 +28,7 @@ s3 = session.client(
 )
 BUCKET_NAME = "app-3djewelers"
 
+
 # ---------------------------
 # Endpoint: Add a new jeweler
 # ---------------------------
@@ -36,7 +37,9 @@ async def add_jeweler(
     username: str,
     email: str,
     workload: str,
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),  # No default value
+    session: AsyncSession = Depends(
+        db_helper.scoped_session_dependency
+    ),  # No default value
     phone_number: str = None,
     address: str = None,
     avatar: UploadFile = File(None),
@@ -47,7 +50,9 @@ async def add_jeweler(
     if avatar:
         # Validate file type
         if not avatar.filename.lower().endswith((".jpg", ".jpeg", ".png")):
-            raise HTTPException(status_code=400, detail="Only JPG/PNG images are allowed")
+            raise HTTPException(
+                status_code=400, detail="Only JPG/PNG images are allowed"
+            )
 
         # Upload avatar to S3
         try:
@@ -80,11 +85,15 @@ async def add_jeweler(
         await session.rollback()
         raise HTTPException(status_code=500, detail="Failed to add jeweler")
 
+
 # ---------------------------
 # Endpoint: Get jeweler by ID
 # ---------------------------
 @router.get("/{jeweler_id}/", summary="Получить ювелира по ID")
-async def get_jeweler(jeweler_id: int, session: AsyncSession = Depends(db_helper.scoped_session_dependency)):
+async def get_jeweler(
+    jeweler_id: int,
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+):
     """Get a jeweler by ID."""
     try:
         query = select(JewelersOrm).where(JewelersOrm.id == jeweler_id)
@@ -99,6 +108,7 @@ async def get_jeweler(jeweler_id: int, session: AsyncSession = Depends(db_helper
         logger.error(f"Error fetching jeweler: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch jeweler")
 
+
 # ---------------------------
 # Endpoint: Update jeweler by ID
 # ---------------------------
@@ -106,7 +116,9 @@ async def get_jeweler(jeweler_id: int, session: AsyncSession = Depends(db_helper
 async def update_jeweler(
     jeweler_update: UpdateJewelersDTO,
     jeweler: JewelersOrm = Depends(jeweler_by_id),
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),  # No default value
+    session: AsyncSession = Depends(
+        db_helper.scoped_session_dependency
+    ),  # No default value
 ):
     """Update a jeweler's details."""
     try:
@@ -115,19 +127,27 @@ async def update_jeweler(
             jeweler=jeweler,
             jeweler_update=jeweler_update,
         )
-        return {"message": "Jeweler updated successfully", "updated_jeweler": updated_jeweler}
+        return {
+            "message": "Jeweler updated successfully",
+            "updated_jeweler": updated_jeweler,
+        }
     except Exception as e:
         logger.error(f"Error updating jeweler: {e}")
         raise HTTPException(status_code=500, detail="Failed to update jeweler")
 
+
 # ---------------------------
 # Endpoint: Delete jeweler by ID
 # ---------------------------
-@router.delete("/{jeweler_id}/", status_code=status.HTTP_204_NO_CONTENT, summary="Удалить ювелира")
+@router.delete(
+    "/{jeweler_id}/", status_code=status.HTTP_204_NO_CONTENT, summary="Удалить ювелира"
+)
 async def delete_jeweler(
     jeweler_id: int,
     jeweler: JewelersOrm = Depends(jeweler_by_id),
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),  # No default value
+    session: AsyncSession = Depends(
+        db_helper.scoped_session_dependency
+    ),  # No default value
 ):
     """Delete a jeweler by ID."""
     try:
@@ -138,16 +158,6 @@ async def delete_jeweler(
         logger.error(f"Error deleting jeweler: {e}")
         await session.rollback()
         raise HTTPException(status_code=500, detail="Failed to delete jeweler")
-
-
-
-
-
-
-
-
-
-
 
 
 # @router.post("/setup/", summary="Установка базы")
@@ -243,9 +253,6 @@ async def delete_jeweler(
 #     return result.scalars().all()
 
 #
-
-
-
 
 
 # @router.put("/{jeweler_id}/", summary="Изменить ювелира по ID")

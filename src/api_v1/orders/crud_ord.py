@@ -1,4 +1,5 @@
 from typing import Optional
+
 # from src.database import async_session_factory,SessionDep
 from src.models.models import OrdersOrm, Workload
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -27,14 +28,9 @@ async def select_orders():
     pass
 
 
-
-
-
-
 async def delete_order(
     session: AsyncSession,
     order: OrdersOrm,
 ) -> None:
     await session.delete(order)
     await session.commit()
-

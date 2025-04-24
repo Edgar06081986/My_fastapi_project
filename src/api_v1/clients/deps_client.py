@@ -1,11 +1,12 @@
 from typing import Annotated
 
 from fastapi import Path, Depends, HTTPException, status
+
 # from src.database import SessionDep
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.db_helper import db_helper
-from  src.models.models import *
+from src.models.models import *
 
 from . import crud_cli
 

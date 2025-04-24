@@ -9,7 +9,7 @@ class JewelersAddDTO(BaseModel):
     jeweler_avatar_url: Optional[str] = None  # Автоматическая валидация URL
     username: str = Field(min_length=1, max_length=60)
     workload: Workload
-    phone_number: str = Field(min_length=5, max_length=15)
+    phone_number: str = Field(min_length=5, max_length=30)
     address: str = Field(min_length=1, max_length=256)
     email: Optional[EmailStr] = Field(default=None, json_schema_extra={"default": None})
     portfolio: Optional[str] = None
@@ -22,7 +22,7 @@ class JewelersAddDTO(BaseModel):
 
     @field_validator("phone_number")
     def validate_phone_number(cls, v):
-        if not re.match(r"^\+?[\d\s\-\(\)]{5,20}$", v):
+        if not re.match(r"^\+?[\d\s\-\(\)]{5,30}$", v):
             raise ValueError("Invalid phone number format")
         return v
 
@@ -32,7 +32,7 @@ class JewelersAddDTO(BaseModel):
             "examples": [
                 {
                     "username": "johndoe",
-                    "workload": "medium",
+                    "workload": ("repair" or "production" or "production_and_repair"),
                     "phone_number": "+71234567890",
                     "address": "город Краснодар,улица Красная,дом 5 ",
                     "email": "john@example.com",

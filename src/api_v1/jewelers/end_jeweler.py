@@ -87,6 +87,18 @@ async def add_jeweler(
 
 
 # ---------------------------
+# Endpoint: Get  all jewelers 
+# ---------------------------
+
+@router.get("/", summary="Получить всех ювелиров")
+async def get_jewelers(session: AsyncSession=Depends(db_helper.scoped_session_dependency)):
+    query = select(JewelersOrm)
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
+
+# ---------------------------
 # Endpoint: Get jeweler by ID
 # ---------------------------
 @router.get("/{jeweler_id}/", summary="Получить ювелира по ID")
@@ -246,11 +258,6 @@ async def delete_jeweler(
 #     return jeweler_id
 
 
-# @router.get("/", summary="Получить всех ювелиров")
-# async def get_jewelers(session: SessionDep):
-#     query = select(JewelersOrm)
-#     result = await session.execute(query)
-#     return result.scalars().all()
 
 #
 

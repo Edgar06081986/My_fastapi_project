@@ -63,7 +63,7 @@ def downgrade() -> None:
             nullable=False,
         ),
         sa.Column("username", sa.VARCHAR(), autoincrement=False, nullable=False),
-        sa.Column("email", sa.VARCHAR(length=20), autoincrement=False, nullable=False),
+        sa.Column("email", sa.VARCHAR(length=30), autoincrement=False, nullable=False),
         sa.Column(
             "client_avatar_url",
             sa.VARCHAR(length=500),
@@ -71,7 +71,7 @@ def downgrade() -> None:
             nullable=True,
         ),
         sa.Column(
-            "phone_number", sa.VARCHAR(length=20), autoincrement=False, nullable=False
+            "phone_number", sa.VARCHAR(length=30), autoincrement=False, nullable=False
         ),
         sa.PrimaryKeyConstraint("id", name="clients_pkey"),
         postgresql_ignore_search_path=False,

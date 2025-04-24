@@ -108,7 +108,7 @@ class M2mJewelersClientsORM(Base):
         ForeignKey("clients.id", ondelete="CASCADE"),
         primary_key=True,
     )
-    cover_letter: Mapped[Optional[str]]
+    cover_letter: Mapped[Optional[str]] = mapped_column(nullable=True)
 
 
 class OrdersOrm(Base):

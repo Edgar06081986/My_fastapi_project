@@ -19,7 +19,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 # from geoalchemy2 import Geometry
-from src.models.base import Base, str_256
+from src.database import Base, str_256
 
 
 intpk = Annotated[int, mapped_column(primary_key=True)]

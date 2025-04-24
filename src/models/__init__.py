@@ -10,6 +10,6 @@ __all__ = (
 )
 
 
-from .base import Base
+from src.database import Base
 from .models import JewelersOrm, ClientsOrm, OrdersOrm, Workload, M2mJewelersClientsORM
 from .db_helper import DatabaseHelper, db_helper

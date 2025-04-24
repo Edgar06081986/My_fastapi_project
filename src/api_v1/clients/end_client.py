@@ -1,6 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Depends, status
 import boto3
 from src.config import yc_settings
+
 # from src.database import SessionDep
 from src.api_v1.clients.cli_schemas import ClientsAddDTO
 from src.models.models import ClientsOrm
@@ -14,10 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 app = FastAPI()
 
-router = APIRouter(
-    prefix="/clients",
-    tags=["Clients"])
-
+router = APIRouter(prefix="/clients", tags=["Clients"])
 
 
 session = boto3.session.Session()
@@ -37,7 +35,9 @@ BUCKET_NAME = "app-3djewelers"
 async def add_client(
     username: str,
     email: str,
-    session: AsyncSession=Depends(db_helper.scoped_session_dependency),  # Добавляем зависимость сессии
+    session: AsyncSession = Depends(
+        db_helper.scoped_session_dependency
+    ),  # Добавляем зависимость сессии
     phone_number: Optional[str] = None,
     avatar: Optional[UploadFile] = File(None),
 ):
@@ -71,6 +71,7 @@ async def add_client(
 
     return {"message": "Client created successfully", "new_client": new_client}
 
+
 # @router.post("/add", summary="Добавить клиента")
 # async def add_client(data: ClientsAddDTO,session:SessionDep,avatar: Optional[UploadFile] = File(None),
 # ):
@@ -92,8 +93,6 @@ async def add_client(
 #     await session.commit()
 #     return {"Клиент создан":True}
 # 1. Создаём сессию с настройками доступа к Yandex Cloud
-
-
 
 
 # @router.get("/", summary="Получить всех клиентов")

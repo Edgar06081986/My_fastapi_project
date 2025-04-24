@@ -1,6 +1,7 @@
 from typing import Optional
 from pydantic import EmailStr
 from sqlalchemy import select
+
 # from src.database import SessionDep
 from sqlalchemy.engine import Result
 from sqlalchemy.orm import selectinload
@@ -18,7 +19,7 @@ async def get_clients(session: AsyncSession) -> list[ClientsOrm]:
     return list(clients)
 
 
-async def get_client(session: AsyncSession, client_id: int) -> ClientsOrm| None:
+async def get_client(session: AsyncSession, client_id: int) -> ClientsOrm | None:
     return await session.get(ClientsOrm, client_id)
 
 

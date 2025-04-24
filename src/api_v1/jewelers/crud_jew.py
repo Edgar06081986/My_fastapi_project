@@ -51,7 +51,6 @@ async def delete_jeweler(session: AsyncSession, jeweler: JewelersOrm) -> None:
         raise
 
 
-
 #
 # async def insert_jewelers(
 #     username: str,
@@ -74,11 +73,6 @@ async def delete_jeweler(session: AsyncSession, jeweler: JewelersOrm) -> None:
 #         # flush взаимодействует с БД, поэтому пишем await
 #         # await session.flush()
 #         await session.commit()
-
-
-
-
-
 
 
 # async def select_jewelers():
@@ -126,4 +120,3 @@ async def delete_jeweler(session: AsyncSession, jeweler: JewelersOrm) -> None:
 #         ]
 #         print(f"{result_dto=}")
 #         return result_dto
-

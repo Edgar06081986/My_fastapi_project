@@ -10,22 +10,19 @@ class ClientsAddDTO(BaseModel):
     client_avatar_url: Optional[str] = None  # Автоматическая валидация URL
     phone_number: str = Field(min_length=5, max_length=20)
     email: Optional[EmailStr] = Field(default=None, json_schema_extra={"default": None})
-    
 
     @field_validator("client_avatar_url")
     def validate_url(cls, v):
         if v and not v.startswith(("http://", "https://")):
             raise ValueError("URL должен начинаться с http:// или https://")
         return v
-    
-    
+
     @field_validator("phone_number")
     def validate_phone_number(cls, v):
         if not re.match(r"^\+?[\d\s\-\(\)]{5,20}$", v):
             raise ValueError("Invalid phone number format")
         return v
-    
-      
+
     model_config = ConfigDict(
         extra="forbid",
         json_schema_extra={
@@ -34,15 +31,11 @@ class ClientsAddDTO(BaseModel):
                     "username": "john_doe",
                     "phone_number": "+1234567890",
                     "email": "john@example.com",
-                    
                 }
             ]
         },
     )
 
-    
-
-   
 
 class ClientsDTO(ClientsAddDTO):
     id: int

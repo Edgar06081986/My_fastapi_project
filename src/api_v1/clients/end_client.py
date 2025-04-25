@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Depends, status
 import boto3
 from src.config import yc_settings
-
+import logging
 # from src.database import SessionDep
 from src.api_v1.clients.cli_schemas import ClientsAddDTO
 from src.models.models import ClientsOrm
@@ -13,7 +13,8 @@ from .cli_schemas import *
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-app = FastAPI()
+# Initialize logger
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/clients", tags=["Clients"])
 
@@ -31,7 +32,7 @@ s3 = session.client(
 BUCKET_NAME = "app-3djewelers"
 
 
-@router.post("/", summary="add client")
+@router.post("/", summary="Добавить клиента")
 async def add_client(
     username: str,
     email: str,
@@ -118,12 +119,19 @@ async def read_clients(
     return clients
 
 
-#
-# @router.delete(
-#     "/{client_id}/", status_code=status.HTTP_204_NO_CONTENT, summary="Удалить клиента"
-# )
-# async def delete_client(
-#     client: ClientsOrm = Depends(client_by_id),
-#     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
-# ) -> None:
-#     await crud_cli.delete_client(session=session, client=client)
+
+@router.delete(
+    "/{client_id}/", status_code=status.HTTP_204_NO_CONTENT, summary="Удалить клиента"
+)
+async def delete_client(
+    client: ClientsOrm = Depends(client_by_id),
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+) -> None:
+    """Delete a client by ID."""
+    try:
+        await crud_cli.delete_client(session=session, client=client)
+        logger.info(f"Client with ID {client.id} deleted successfully.")
+    except Exception as e:
+        logger.error(f"Error deleting client with ID {client.id}: {e}")
+        await session.rollback()
+        raise HTTPException(status_code=500, detail="Failed to delete client")

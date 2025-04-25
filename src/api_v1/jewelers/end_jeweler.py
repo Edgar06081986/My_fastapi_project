@@ -159,13 +159,12 @@ async def delete_jeweler(
     jeweler: JewelersOrm = Depends(jeweler_by_id),
     session: AsyncSession = Depends(
         db_helper.scoped_session_dependency
-    ),  # No default value
+    ),
 ):
     """Delete a jeweler by ID."""
     try:
         await session.delete(jeweler)
         await session.commit()
-        return {"message": "Jeweler deleted successfully"}
     except Exception as e:
         logger.error(f"Error deleting jeweler: {e}")
         await session.rollback()

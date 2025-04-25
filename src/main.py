@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.api_v1.clients.end_client import router as client_router
-from src.models.base import Base
+from src.database import Base
 from src.api_v1.orders.end_order import router as order_router
 from src.api_v1.jewelers.end_jeweler import router as jeweler_router
 import uvicorn

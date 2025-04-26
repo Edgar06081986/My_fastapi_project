@@ -74,5 +74,5 @@ def downgrade() -> None:
     op.drop_table('m2m_jewelers_clients')
     op.drop_table('jewelers')
     op.drop_table('clients')
-    op.execute("DROP TYPE")
+    op.execute("DROP TYPE IF EXISTS workload CASCADE")
     # ### end Alembic commands ###

@@ -1,0 +1,13 @@
+
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5432:5432"
+
+  my_app:
+    image: my_app
+    depends_on:
+      - postgres

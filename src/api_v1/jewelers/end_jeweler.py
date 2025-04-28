@@ -8,6 +8,7 @@ from .deps_jeweler import jeweler_by_id
 import boto3
 import logging
 from src.models.db_helper import db_helper
+from  src.models.models import Workload
 
 # Initialize logger
 logger = logging.getLogger(__name__)

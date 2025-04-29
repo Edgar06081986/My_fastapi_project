@@ -52,7 +52,7 @@ async def add_client(
 
         # Загрузка в S3
         file_key = f"avatars/{username}_{avatar.filename}"
-        s3.upload_fileobj(avatar.file, "app-3djewelers", file_key)
+        s3.upload_fileobj(avatar.file, f"{BUCKET_NAME}", file_key)
         avatar_url = f"https://storage.yandexcloud.net/{BUCKET_NAME}/{file_key}"
 
         # Создание DTO

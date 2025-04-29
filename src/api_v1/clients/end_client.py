@@ -2,6 +2,7 @@ from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Depends
 import boto3
 from src.config import yc_settings
 import logging
+
 # from src.database import SessionDep
 from src.api_v1.clients.cli_schemas import ClientsAddDTO
 from src.models.models import ClientsOrm
@@ -52,7 +53,7 @@ async def add_client(
         # Загрузка в S3
         file_key = f"avatars/{username}_{avatar.filename}"
         s3.upload_fileobj(avatar.file, "app-3djewelers", file_key)
-        avatar_url = f"https://storage.yandexcloud.net/your-bucket/{file_key}"
+        avatar_url = f"https://storage.yandexcloud.net/{BUCKET_NAME}/{file_key}"
 
         # Создание DTO
         data = ClientsAddDTO(
@@ -117,7 +118,6 @@ async def read_clients(
         session=session,
     )
     return clients
-
 
 
 @router.delete(

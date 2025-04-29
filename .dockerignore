@@ -1,0 +1,34 @@
+# Игнорируем виртуальные окружения
+.venv
+venv
+env
+
+# Кэш pip/uv
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Кэш IDE
+*.log
+*.sqlite3
+*.db
+
+# PyCharm, VSCode и другие IDE
+.idea/
+.vscode/
+*.swp
+
+# Git-репозиторий (если не нужен внутри контейнера)
+.git
+.gitignore
+
+# Docker-related
+Dockerfile
+.dockerignore
+
+# Секреты и конфигурации
+*.env
+.env.*
+secrets/

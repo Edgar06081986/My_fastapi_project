@@ -44,7 +44,8 @@ if settings.api_v1_prefix != yc_settings.api_v1_prefix_2:
 
 
 if __name__ == "__main__":
-    uvicorn.run("src.main:app", reload=True)
+    uvicorn.run("src.main:app", reload=True, host="0.0.0.0", port=8000)
+
 
 # # if __name__ == "__main__":
 # #     asyncio.run(main())

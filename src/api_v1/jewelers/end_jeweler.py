@@ -8,7 +8,8 @@ from .deps_jeweler import jeweler_by_id
 import boto3
 import logging
 from src.models.db_helper import db_helper
-from  src.models.models import Workload
+import urllib.parse
+from src.models.models import Workload
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -55,14 +56,19 @@ async def add_jeweler(
                 status_code=400, detail="Only JPG/PNG images are allowed"
             )
 
-        # Upload avatar to S3
-        try:
-            file_key = f"avatars/{username}_{avatar.filename}"
-            s3.upload_fileobj(avatar.file, BUCKET_NAME, file_key)
+            # Безопасное имя файла
+            safe_filename = urllib.parse.quote(f"{username}_{avatar.filename}")
+            file_key = f"avatars/{safe_filename}"
+
+            # Загрузка в S3 с обработкой ошибок
+            try:
+                s3.upload_fileobj(avatar.file, BUCKET_NAME, file_key)
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500, detail=f"S3 upload failed: {str(e)}"
+                )
+
             avatar_url = f"https://storage.yandexcloud.net/{BUCKET_NAME}/{file_key}"
-        except Exception as e:
-            logger.error(f"Error uploading avatar to S3: {e}")
-            raise HTTPException(status_code=500, detail="Failed to upload avatar")
 
     # Create DTO for the new jeweler
     data = JewelersAddDTO(
@@ -88,15 +94,17 @@ async def add_jeweler(
 
 
 # ---------------------------
-# Endpoint: Get  all jewelers 
+# Endpoint: Get  all jewelers
 # ---------------------------
 
+
 @router.get("/", summary="Получить всех ювелиров")
-async def get_jewelers(session: AsyncSession=Depends(db_helper.scoped_session_dependency)):
+async def get_jewelers(
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+):
     query = select(JewelersOrm)
     result = await session.execute(query)
     return result.scalars().all()
-
 
 
 # ---------------------------
@@ -158,9 +166,7 @@ async def update_jeweler(
 async def delete_jeweler(
     jeweler_id: int,
     jeweler: JewelersOrm = Depends(jeweler_by_id),
-    session: AsyncSession = Depends(
-        db_helper.scoped_session_dependency
-    ),
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
     """Delete a jeweler by ID."""
     try:
@@ -256,7 +262,6 @@ async def delete_jeweler(
 # @router.get("/{jeweler_id}/")
 # async def get_jeweler(jeweler_id:int=Depends(jeweler_by_id)):
 #     return jeweler_id
-
 
 
 #

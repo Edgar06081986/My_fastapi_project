@@ -1,9 +1,6 @@
 FROM python:3.12-slim
 
-# Установка обновлений и зависимостей
-RUN apt-get update
-
-# Копирование утилиты uv
+# Установка утилиты uv (пакетный менеджер)
 COPY --from=ghcr.io/astral-sh/uv:0.6.3 /uv /uvx /bin/
 
 # Установка зависимостей
@@ -11,15 +8,18 @@ COPY pyproject.toml uv.lock ./
 ENV UV_SYSTEM_PYTHON=1
 RUN uv pip install --system --no-cache -r pyproject.toml
 
-# Копируем весь проект в контейнер
+# Копируем весь проект
 COPY . /app
 WORKDIR /app
 
-# Устанавливаем PYTHONPATH, чтобы src распознавался как модуль
+# Чтобы модуль src правильно импортировался
 ENV PYTHONPATH=/app
 
-# Запуск приложения
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Запуск FastAPI через uvicorn
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]
 
 
 #FROM python:3.12-slim

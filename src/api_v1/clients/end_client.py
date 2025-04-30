@@ -2,6 +2,7 @@ from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Depends
 import boto3
 from src.config import yc_settings
 import logging
+import urllib.parse
 
 # from src.database import SessionDep
 from src.api_v1.clients.cli_schemas import ClientsAddDTO
@@ -37,36 +38,37 @@ BUCKET_NAME = "app-3djewelers"
 async def add_client(
     username: str,
     email: str,
-    session: AsyncSession = Depends(
-        db_helper.scoped_session_dependency
-    ),  # Добавляем зависимость сессии
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
     phone_number: Optional[str] = None,
     avatar: Optional[UploadFile] = File(None),
 ):
     avatar_url = None
 
     if avatar:
-        # Проверка типа файла
         if not avatar.filename.lower().endswith((".jpg", ".jpeg", ".png")):
             raise HTTPException(400, "Only JPG/PNG images allowed")
 
-        # Загрузка в S3
-        file_key = f"avatars/{username}_{avatar.filename}"
-        s3.upload_fileobj(avatar.file, "app-3djewelers", file_key)
+        # Безопасное имя файла
+        safe_filename = urllib.parse.quote(f"{username}_{avatar.filename}")
+        file_key = f"avatars/{safe_filename}"
+
+        # Загрузка в S3 с обработкой ошибок
+        try:
+            s3.upload_fileobj(avatar.file, BUCKET_NAME, file_key)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"S3 upload failed: {str(e)}")
+
         avatar_url = f"https://storage.yandexcloud.net/{BUCKET_NAME}/{file_key}"
 
-        # Создание DTO
-        data = ClientsAddDTO(
-            username=username,
-            email=email,
-            phone_number=phone_number,
-            client_avatar_url=str(avatar_url),
-        )
+    # Создание DTO
+    data = ClientsAddDTO(
+        username=username,
+        email=email,
+        phone_number=phone_number,
+        client_avatar_url=str(avatar_url),
+    )
 
-    # Преобразование в SQLAlchemy модель
     new_client = ClientsOrm(**data.model_dump())
-
-    # Сохранение в БД (теперь с асинхронными вызовами)
     session.add(new_client)
     await session.commit()
     await session.refresh(new_client)

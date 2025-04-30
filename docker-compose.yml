@@ -1,13 +1,29 @@
+version: '3.9'
 
 services:
-  postgres:
-    image: postgres:14
+  postgainer:
+    image: postgres:latest
+    container_name: postgainer
+    restart: always
     environment:
-      POSTGRES_PASSWORD: mypassword
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    user: "1001:1001"  # соответствует PUID=1001 и PGID=1001
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
-  my_app:
-    image: my_app
+  fastapi:
+    build: .
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env.db
+      - .env.yc
     depends_on:
-      - postgres
+      - postgainer

@@ -19,7 +19,7 @@ WORKDIR /app
 ENV PYTHONPATH=/app
 
 # Запуск приложения
-CMD ["python3", "src/main.py"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 
 #FROM python:3.12-slim

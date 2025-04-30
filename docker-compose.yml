@@ -15,20 +15,19 @@ services:
     ports:
       - "5432:5432"
 
-
- pgadmin:
+  pgadmin:
     image: dpage/pgadmin4
     restart: unless-stopped
     ports:
-      - 5082:5050
+      - "5082:5050"
     env_file:
       - .env.pg4
     # volumes:
-    #   - /var/lib/pgadmin/ants:/var/lib/pgadmin
+    #   - ./pgadmin_data:/var/lib/pgadmin
     depends_on:
       - postgainer
 
- fastapi:
+  fastapi:
     build: .
     container_name: fastapi_app
     ports:
@@ -40,3 +39,5 @@ services:
       - .env.yc
     depends_on:
       - postgainer
+
+

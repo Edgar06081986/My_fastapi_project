@@ -37,18 +37,18 @@ pip-log.txt
 *.swo
 
 # Файлы окружения (env-файлы с секретами)
-.env
+.env.pg4
 .env.local
 .env*.local
 __pycache__/
 *.py[cod]
 *$py.class
-# Игнорировать все файлы .env и их вариации
-.env
+# Игнорировать все файлы .env.pg4 и их вариации
+.env.pg4
 .env.*
 !.env.example  # если нужно исключить какой-то файл (например, шаблон)
 # Файлы окружения
-.env
+.env.pg4
 .env.*
 !.env.example
 

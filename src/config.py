@@ -19,7 +19,7 @@ class Settings(BaseSettings):
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     class Config:  # Replaced SettingsConfigDict with Config
-        env_file = BASE_DIR / ".env.db"
+        env_file = BASE_DIR / ".env.pg4.db"
         extra = "ignore"
 
 
@@ -29,7 +29,7 @@ class YandexCloudSettings(BaseSettings):
     SECRET_KEY: str = Field(alias="YC_SECRET_KEY")
 
     class Config:  # Replaced SettingsConfigDict with Config
-        env_file = BASE_DIR / ".env.yc"
+        env_file = BASE_DIR / ".env.pg4.yc"
         extra = "ignore"
 
 

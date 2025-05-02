@@ -15,6 +15,8 @@ WORKDIR /app
 # Чтобы модуль src правильно импортировался
 ENV PYTHONPATH=/app
 
+RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
+
 # Запуск FastAPI через uvicorn
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

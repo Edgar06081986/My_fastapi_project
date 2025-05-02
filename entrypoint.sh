@@ -1,4 +1,10 @@
 #!/bin/bash
+
+echo "⏳ Ожидание PostgreSQL на postgainer:5432..."
+while ! nc -z postgainer 5432; do
+  sleep 1
+done
+echo "✅ PostgreSQL доступен!"
 echo "⏳ Запуск миграций Alembic..."
 alembic upgrade head || { echo "❌ Миграции не применены"; exit 1; }
 

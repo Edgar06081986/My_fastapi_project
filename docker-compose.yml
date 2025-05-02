@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-    user: "1000:1000"  # соответствует PUID=1000 и PGID=1000  на работе 1001 и 1001 №№№№№№№№№
+#    user: "1000:1000"  # соответствует PUID=1000 и PGID=1000  на работе 1001 и 1001 №№№№№№№№№
     volumes:
       - pg_data:/var/lib/postgresql/data
     ports:
@@ -20,8 +20,8 @@ services:
       - "5082:5050"
     env_file:
       - .env.pg4
-    # volumes:
-    #   - ./pgadmin_data:/var/lib/pgadmin
+    volumes:
+    - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - postgainer
 
@@ -40,7 +40,28 @@ services:
     depends_on:
       - postgainer
 
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+        - "3000:3000"
+    volumes:
+        - grafana_data:/var/lib/grafana
+    environment:
+        - GF_SECURITY_ADMIN_USER=admin
+        - GF_SECURITY_ADMIN_PASSWORD=admin
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:2.9.3
+    container_name: promtail
+    volumes:
+      - ./promtail-config.yaml:/etc/promtail/promtail.yaml
+      - /var/log:/var/log          # Пример: чтение системных логов
+      - ./logs:/app/logs           # Пример: логи твоего приложения
+    command: -config.file=/etc/promtail/promtail.yaml
+    restart: unless-stopped
 volumes:
   pg_data:
-
-
+  pgadmin_data:
+  grafana_data:

@@ -10,6 +10,11 @@ from src.models.db_helper import db_helper
 # from src.database import SessionDep, async_engine
 from src.config import yc_settings, settings
 from src.api_v1 import router as router_v1
+from logger import logger
+
+logger.info("FastAPI приложение запущено")
+logger.warning("Что-то пошло не так")
+logger.error("Произошла ошибка")
 
 
 app = FastAPI()

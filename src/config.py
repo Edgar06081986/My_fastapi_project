@@ -1,6 +1,6 @@
 from pathlib import Path
 from pydantic_settings import BaseSettings
-from pydantic import Field  # Updated import
+from pydantic import Field,BaseModel # Updated import
 
 BASE_DIR = Path(__file__).parent.parent
 
@@ -32,7 +32,15 @@ class YandexCloudSettings(BaseSettings):
         env_file = BASE_DIR / ".env.pg4.yc"
         extra = "ignore"
 
+        
+
+class AuthJWT(BaseModel):
+    private_key_path: Path = BASE_DIR / "certs" / "jwt-private_key.pem"
+    public_key_path: Path = BASE_DIR / "certs" / "jwt-public_key.pem"
+    algorithm: str = "RS256"
+
 
 # Инициализация настроек
 settings: Settings = Settings()
 yc_settings: YandexCloudSettings = YandexCloudSettings()
+auth_jwt: AuthJWT = AuthJWT()

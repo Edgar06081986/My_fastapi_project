@@ -80,3 +80,6 @@ ENV/
 htmlcov/
 .pytest_cache/
 echo ".env*" >> .gitignore
+
+# Сертификаты JWT Токены приватный ключ
+certs/

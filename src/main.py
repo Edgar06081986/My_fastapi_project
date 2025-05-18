@@ -4,13 +4,15 @@ from src.api_v1.clients.end_client import router as client_router
 from src.database import Base
 from src.api_v1.orders.end_order import router as order_router
 from src.api_v1.jewelers.end_jeweler import router as jeweler_router
+from src.demo_auth.demo_jwt_auth import router as demo_jwt_auth_router
 import uvicorn
+
 from src.models.db_helper import db_helper
 
 # from src.database import SessionDep, async_engine
 from src.config import yc_settings, settings
 from src.api_v1 import router as router_v1
-from logger import logger
+from src.logger import logger
 
 logger.info("FastAPI приложение запущено")
 logger.warning("Что-то пошло не так")
@@ -28,7 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+app.include_router(demo_jwt_auth_router)
 app.include_router(client_router, prefix=settings.api_v1_prefix)
 app.include_router(order_router, prefix=settings.api_v1_prefix)
 app.include_router(jeweler_router, prefix=settings.api_v1_prefix)

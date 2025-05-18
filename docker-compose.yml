@@ -34,34 +34,35 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
+      - ./certs:/app/certs:ro
     env_file:
       - .env.db
       - .env.yc
     depends_on:
       - postgainer
 
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    ports:
-        - "3000:3000"
-    volumes:
-        - grafana_data:/var/lib/grafana
-    environment:
-        - GF_SECURITY_ADMIN_USER=admin
-        - GF_SECURITY_ADMIN_PASSWORD=admin
-    restart: unless-stopped
+#  grafana:
+#    image: grafana/grafana:latest
+#    container_name: grafana
+#    ports:
+#        - "3000:3000"
+#    volumes:
+#        - grafana_data:/var/lib/grafana
+#    environment:
+#        - GF_SECURITY_ADMIN_USER=admin
+#        - GF_SECURITY_ADMIN_PASSWORD=admin
+#    restart: unless-stopped
 
-  promtail:
-    image: grafana/promtail:2.9.3
-    container_name: promtail
-    volumes:
-      - ./promtail-config.yaml:/etc/promtail/promtail.yaml
-      - /var/log:/var/log          # Пример: чтение системных логов
-      - ./logs:/app/logs           # Пример: логи твоего приложения
-    command: -config.file=/etc/promtail/promtail.yaml
-    restart: unless-stopped
+#  promtail:
+#    image: grafana/promtail:2.9.3
+#    container_name: promtail
+#    volumes:
+#      - ./promtail-config.yaml:/etc/promtail/promtail.yaml
+#      - /var/log:/var/log          # Пример: чтение системных логов
+#      - ./logs:/app/logs           # Пример: логи твоего приложения
+#    command: -config.file=/etc/promtail/promtail.yaml
+#    restart: unless-stopped
 volumes:
   pg_data:
   pgadmin_data:
-  grafana_data:
+#  grafana_data:

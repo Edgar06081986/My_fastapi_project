@@ -58,3 +58,12 @@ class OrdersDTO(OrdersAddDTO):
     id: int = Field(ge=0, le=130)
     created_at: datetime
     updated_at: datetime
+
+
+class ClientSchema(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    username: str
+    password: bytes
+    email: EmailStr | None = None
+    active: bool = True

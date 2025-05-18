@@ -52,3 +52,5 @@ class ClientsAddDTO(BaseModel):
 
 class ClientsDTO(ClientsAddDTO):
     id: int
+
+

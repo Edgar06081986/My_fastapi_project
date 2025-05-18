@@ -1,8 +1,15 @@
 from pathlib import Path
 from pydantic_settings import BaseSettings
-from pydantic import Field,BaseModel # Updated import
+from pydantic import Field, BaseModel  # Updated import
 
 BASE_DIR = Path(__file__).parent.parent
+
+
+class AuthJWT(BaseModel):
+    private_key_path: Path = BASE_DIR / "certs" / "jwt-private.pem"
+    public_key_path: Path = BASE_DIR / "certs" / "jwt-public.pem"
+    algorithm: str = "RS256"
+    access_token_expire_minutes: int = 3
 
 
 class Settings(BaseSettings):
@@ -13,6 +20,7 @@ class Settings(BaseSettings):
     DB_PASS: str
     DB_NAME: str
     db_echo: bool = True
+    auth_jwt: AuthJWT = AuthJWT()
 
     @property
     def DATABASE_URL_asyncpg(self):
@@ -32,15 +40,7 @@ class YandexCloudSettings(BaseSettings):
         env_file = BASE_DIR / ".env.pg4.yc"
         extra = "ignore"
 
-        
-
-class AuthJWT(BaseModel):
-    private_key_path: Path = BASE_DIR / "certs" / "jwt-private_key.pem"
-    public_key_path: Path = BASE_DIR / "certs" / "jwt-public_key.pem"
-    algorithm: str = "RS256"
-
 
 # Инициализация настроек
 settings: Settings = Settings()
 yc_settings: YandexCloudSettings = YandexCloudSettings()
-auth_jwt: AuthJWT = AuthJWT()

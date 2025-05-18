@@ -73,3 +73,12 @@ class OrdersDTO(OrdersAddDTO):
 
 class JewelersRelDTO(JewelersDTO):
     orders: list["OrdersDTO"]
+
+
+class JewelerSchema(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    username: str
+    password: bytes
+    email: EmailStr | None = None
+    active: bool = True

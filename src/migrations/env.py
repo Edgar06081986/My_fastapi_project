@@ -1,5 +1,5 @@
 from logging.config import fileConfig
-from sqlalchemy import  create_engine
+from sqlalchemy import create_engine
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
@@ -10,7 +10,13 @@ from alembic import context
 config = context.config
 from src.config import settings
 
-from src.models.models import JewelersOrm,Workload,ClientsOrm,OrdersOrm,M2mJewelersClientsORM
+from src.models.models import (
+    JewelersOrm,
+    Workload,
+    ClientsOrm,
+    OrdersOrm,
+    M2mJewelersClientsORM,
+)
 from src.database import Base
 
 
@@ -18,10 +24,11 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 
-config.set_main_option("sqlalchemy.url",settings.DATABASE_URL_asyncpg + "?async_fallback=True")
+config.set_main_option(
+    "sqlalchemy.url", settings.DATABASE_URL_asyncpg + "?async_fallback=True"
+)
 
 target_metadata = Base.metadata
-
 
 
 # other values from the config, defined by the needs of env.py,
@@ -68,8 +75,9 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata,
-            compare_server_default=True
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_server_default=True,
         )
 
         with context.begin_transaction():

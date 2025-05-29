@@ -4,8 +4,8 @@ from .jewelers.end_jeweler import router as jeweler_router
 from .clients.end_client import router as client_router
 from .orders.end_order import router as order_router
 from .orders import *
-from  .clients import *
-from  .jewelers import *
+from .clients import *
+from .jewelers import *
 
 router = APIRouter()
 router.include_router(router=jeweler_router)

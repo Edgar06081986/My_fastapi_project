@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 from pydantic_settings import BaseSettings
 from pydantic import Field, BaseModel  # Updated import
 
@@ -41,6 +42,7 @@ class YandexCloudSettings(BaseSettings):
         extra = "ignore"
 
 
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 # Инициализация настроек
 settings: Settings = Settings()
 yc_settings: YandexCloudSettings = YandexCloudSettings()

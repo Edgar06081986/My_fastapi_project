@@ -1,6 +1,6 @@
+from asyncio import current_task
 from typing import Any, AsyncGenerator
 from src.config import settings
-from asyncio import current_task
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     create_async_engine,

@@ -2,7 +2,7 @@ from aiogram import Bot, Dispatcher
 from src.bot.handlers import router
 import src.config as config
 from src.logger import logger
-from src.config import settings
+from src.database import async_session_factory
 from src.bot.middlewares.db_session import DBSessionMiddleware
 
 
@@ -11,7 +11,7 @@ dp = Dispatcher()
 dp.include_router(router)
 
 # Подключаем middleware сессии
-dp.message.middleware(DBSessionMiddleware(SessionLocal))
+dp.message.middleware(DBSessionMiddleware(async_session_factory))
 
 
 async def start_bot():

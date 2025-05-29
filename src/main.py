@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
@@ -7,7 +8,7 @@ from src.api_v1.jewelers.end_jeweler import router as jeweler_router
 from src.demo_auth.demo_jwt_auth import router as demo_jwt_auth_router
 from src.config import yc_settings, settings
 from src.logger import logger
-import asyncio
+
 from src.bot.main import start_bot
 
 

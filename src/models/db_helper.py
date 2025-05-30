@@ -1,4 +1,4 @@
-from asyncio import current_task
+import asyncio
 from typing import Any, AsyncGenerator
 from src.config import settings
 from sqlalchemy.ext.asyncio import (
@@ -25,7 +25,7 @@ class DatabaseHelper:
     def get_scoped_session(self):
         session = async_scoped_session(
             session_factory=self.session_factory,
-            scopefunc=current_task,
+            scopefunc=asyncio.current_task,
         )
         return session
 
@@ -46,3 +46,4 @@ db_helper = DatabaseHelper(
     url=settings.DATABASE_URL_asyncpg,
     echo=settings.db_echo,
 )
+print(db_helper.get_scoped_session())

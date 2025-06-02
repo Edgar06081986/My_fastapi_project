@@ -11,9 +11,9 @@ dp = Dispatcher()
 dp.include_router(router)
 
 # Подключаем middleware сессии
-dp.message.middleware(DBSessionMiddleware(db_helper.scoped_session_dependency))
+dp.message.middleware(DBSessionMiddleware(db_helper.session_dependency()))
 
 
 async def start_bot():
-    logger.info()
+    logger.info("✅ Telegram бот запущен")
     await dp.start_polling(bot)

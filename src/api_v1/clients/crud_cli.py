@@ -5,7 +5,7 @@ from sqlalchemy import select
 # from src.database import SessionDep
 from sqlalchemy.engine import Result
 from sqlalchemy.orm import selectinload
-from src.database import async_session_factory
+from src.models.db_helper import db_helper
 from src.models.models import ClientsOrm
 from src.api_v1.clients.cli_schemas import ClientsRelDTO
 from src.api_v1.jewelers.jew_schemas import JewelersRelDTO

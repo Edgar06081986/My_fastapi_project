@@ -1,9 +1,9 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-from src.api_v1.end_client import router as client_router
-from src.api_v1.orders.end_order import router as order_router
-from src.api_v1.end_jeweler import router as jeweler_router
+from src.api.end_client import router as client_router
+from src.api.orders.end_order import router as order_router
+from src.api.end_jeweler import router as jeweler_router
 from src.demo_auth.demo_jwt_auth import router as demo_jwt_auth_router
 from src.config import yc_settings, settings
 from src.logger import logger

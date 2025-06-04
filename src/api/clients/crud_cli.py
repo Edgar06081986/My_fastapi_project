@@ -7,8 +7,8 @@ from sqlalchemy.engine import Result
 from sqlalchemy.orm import selectinload
 from src.models.db_helper import db_helper
 from src.models.models import ClientsOrm
-from src.api_v1.clients.cli_schemas import ClientsRelDTO
-from src.api_v1.jewelers.jew_schemas import JewelersRelDTO
+from src.api.clients.cli_schemas import ClientsRelDTO
+from src.api.jewelers.jew_schemas import JewelersRelDTO
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

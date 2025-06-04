@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, status
-from src.api_v1.jewelers.jew_schemas import JewelerSchema
+from src.api.jewelers.jew_schemas import JewelerSchema
 from src.auth import utils as auth_utils
 from pydantic import BaseModel
 from fastapi.security import HTTPBearer
@@ -55,6 +55,47 @@ def validate_auth_jeweler(
         )
 
     return jeweler
+
+
+def get_current_token_payload(
+    # credentials: HTTPAuthorizationCredentials = Depends(http_bearer),
+    token: str = Depends(oauth2_scheme),
+) -> dict:
+    # token = credentials.credentials
+    try:
+        payload = auth_utils.decode_jwt(
+            token=token,
+        )
+    except InvalidTokenError as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"invalid token error: {e}",
+            # detail=f"invalid token error",
+        )
+    return payload
+
+
+def get_current_auth_user(
+    payload: dict = Depends(get_current_token_payload),
+) -> UserSchema:
+    username: str | None = payload.get("sub")
+    if user := users_db.get(username):
+        return user
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="token invalid (user not found)",
+    )
+
+
+def get_current_active_auth_user(
+    user: UserSchema = Depends(get_current_auth_user),
+):
+    if user.active:
+        return user
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="user inactive",
+    )
 
 
 @router.post("/login/", response_model=TokenInfo)

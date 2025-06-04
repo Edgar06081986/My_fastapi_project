@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 # from src.database import SessionDep
-from src.api_v1.orders import crud_ord
-from src.api_v1.orders.ord_schemas import OrdersAddDTO
+from src.api.orders import crud_ord
+from src.api.orders.ord_schemas import OrdersAddDTO
 from sqlalchemy import select
 from src.models.models import OrdersOrm
 from sqlalchemy.ext.asyncio import AsyncSession

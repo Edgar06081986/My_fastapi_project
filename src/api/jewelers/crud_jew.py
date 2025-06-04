@@ -2,7 +2,7 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.models.models import JewelersOrm
-from src.api_v1.jewelers.jew_schemas import UpdateJewelersDTO
+from src.api.jewelers.jew_schemas import UpdateJewelersDTO
 
 
 async def get_jeweler(session: AsyncSession, jeweler_id: int) -> Optional[JewelersOrm]:

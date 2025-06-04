@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import Optional
 from datetime import datetime
 from src.models.models import Workload
-from src.api_v1.jewelers.jew_schemas import JewelersDTO
+from src.api.jewelers.jew_schemas import JewelersDTO
 
 
 class OrdersAddDTO(BaseModel):

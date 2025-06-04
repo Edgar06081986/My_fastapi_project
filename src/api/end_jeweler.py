@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from src.api_v1.jewelers.crud_jew import update_jeweler as crud_update_jeweler
+from src.api.jewelers.crud_jew import update_jeweler as crud_update_jeweler
 from src.models.models import JewelersOrm
-from src.api_v1.jewelers.jew_schemas import JewelersAddDTO, UpdateJewelersDTO
-from src.api_v1.jewelers.deps_jeweler import jeweler_by_id
+from src.api.jewelers.jew_schemas import JewelersAddDTO, UpdateJewelersDTO
+from src.api.jewelers.deps_jeweler import jeweler_by_id
 import boto3
 import logging
 from src.models.db_helper import db_helper

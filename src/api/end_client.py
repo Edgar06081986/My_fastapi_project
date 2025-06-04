@@ -5,13 +5,13 @@ import logging
 import urllib.parse
 
 # from src.database import SessionDep
-from src.api_v1.clients.cli_schemas import ClientsAddDTO
+from src.api.clients.cli_schemas import ClientsAddDTO
 from src.models.models import ClientsOrm
 from src.models.db_helper import db_helper
 from sqlalchemy import select
-from src.api_v1.clients import crud_cli
-from src.api_v1.clients.deps_client import client_by_id
-from src.api_v1.clients.cli_schemas import *
+from src.api.clients import crud_cli
+from src.api.clients.deps_client import client_by_id
+from src.api.clients.cli_schemas import *
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

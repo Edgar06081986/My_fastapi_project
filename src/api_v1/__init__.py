@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from .jewelers.end_jeweler import router as jeweler_router
-from .clients.end_client import router as client_router
+from src.api_v1.end_jeweler import router as jeweler_router
+from src.api_v1.end_client import router as client_router
 from .orders.end_order import router as order_router
 from .orders import *
 from .clients import *

@@ -10,8 +10,8 @@ from src.models.models import ClientsOrm
 from src.models.db_helper import db_helper
 from sqlalchemy import select
 from src.api_v1.clients import crud_cli
-from .deps_client import client_by_id
-from .cli_schemas import *
+from src.api_v1.clients.deps_client import client_by_id
+from src.api_v1.clients.cli_schemas import *
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

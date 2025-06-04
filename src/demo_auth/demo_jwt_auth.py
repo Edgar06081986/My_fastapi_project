@@ -2,6 +2,10 @@ from fastapi import APIRouter, Depends, Form, HTTPException, status
 from src.api_v1.jewelers.jew_schemas import JewelerSchema
 from src.auth import utils as auth_utils
 from pydantic import BaseModel
+from fastapi.security import HTTPBearer
+
+
+http_bearer = HTTPBearer()
 
 
 class TokenInfo(BaseModel):

@@ -80,3 +80,5 @@ ENV/
 htmlcov/
 .pytest_cache/
 echo ".env*" >> .gitignore
+certs/jwt-private.pem
+certs/jwt-public.pem

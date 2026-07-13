@@ -32,3 +32,5 @@ Dockerfile
 *.env
 .env.*
 secrets/
+.env.yc
+.env.pg4
